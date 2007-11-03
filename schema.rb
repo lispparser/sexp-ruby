@@ -52,7 +52,7 @@ module SExpr
               raise "#{sexpr.pos}: expected symbol '#{name}', got #{sexpr[0].value}"
             else
               # ok, now check type and/or validate children
-              
+              type.validate(sexpr[1..-1])
             end
           end            
         end
@@ -61,7 +61,31 @@ module SExpr
   end
 
   class IntegerType
-    
+    def validate(sexpr)
+      if sexpr.length() != 1 then
+        raise "#{sexpr.pos}: expected a single integer got #{sexpr.to_s}"
+      else
+        if not sexpr[0].is_a?(SExpr::Integer) then
+          raise "#{sexpr.pos}: expected integer got #{sexpr[0].class}"
+        else
+          # ok
+        end
+      end
+    end
+  end
+
+  class RealType
+    def validate(sexpr)
+      if sexpr.length() != 1 then
+        raise "#{sexpr.pos}: expected a single real got #{sexpr.to_s}"
+      else
+        if not sexpr[0].is_a?(SExpr::Real) then
+          raise "#{sexpr.pos}: expected integer got #{sexpr[0].class}"
+        else
+          # ok
+        end
+      end
+    end
   end
 
   # A list of ((key value) ...) 

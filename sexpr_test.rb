@@ -8,7 +8,7 @@ if ARGV.empty?() then
 else
   ARGV.each{|filename|
     sexpr = SExpr::SExpr.parse(File.new(filename).read())
-    sexpr.each{|el|
+    sexpr.each{ |el|
       el.write($stdout)
     }
   }

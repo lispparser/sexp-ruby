@@ -15,6 +15,8 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+require "parser.rb"
+
 module SExpr
 
   class SExpr
@@ -131,6 +133,10 @@ module SExpr
 
     def empty?()
       return @value.empty?()
+    end
+
+    def length()
+      return @value.length 
     end
 
     def to_s()
