@@ -1,0 +1,13 @@
+Ruby SExpr
+==========
+
+SExpr is a library for parsing a subset of s-expressions, namely cons
+aren't handled and replaced by more convenient lists:
+
+Right: (foo (bar baz))
+Wrong: (foo . (bar . (baz . ()))
+
+Right: (foo bar)
+Wrong: (foo . bar)
+
+# EOF #
