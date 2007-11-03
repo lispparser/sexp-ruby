@@ -106,7 +106,9 @@ module SExpr
 
     def read_string(name)
       el = find(name)
-      if el.length() != 2 then
+      if not el then
+        return nil
+      elsif el.length() != 2 then
         raise "#{el.pos}: Error expected exactly one integer, got #{el.to_s}"
       elsif not el[1].is_a?(String) then
         raise "#{el.pos}: Error expected a String, got #{el.class}"
@@ -117,7 +119,9 @@ module SExpr
 
     def read_symbol(name)
       el = find(name)
-      if el.length() != 2 then
+      if not el then
+        return nil
+      elsif el.length() != 2 then
         raise "#{el.pos}: Error expected exactly one symbol, got #{el.to_s}"
       elsif not el[1].is_a?(String) then
         raise "#{el.pos}: Error expected a Symbol, got #{el.class}"
@@ -130,6 +134,8 @@ module SExpr
       el = find(name)
       if el then
         return Reader.new(el)
+      else
+        return nil
       end
     end
   end
