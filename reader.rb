@@ -36,7 +36,7 @@ module SExpr
       elsif sexpr.length() == 0 then
         raise "#{sexpr.pos}: Error: Reader expected List with one or more elements"
       else
-        @name  = sexpr[0]
+        @name  = sexpr[0].value
         @sexpr = sexpr[1..-1]
       end        
     end

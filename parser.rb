@@ -19,7 +19,7 @@ require "sexpr.rb"
 
 module SExpr
   class Parser
-    
+   
     def is_digit(c)
       return (?0..?9).member?(c)
     end
@@ -61,8 +61,10 @@ module SExpr
              c == ?-)
     end
     
-    def initialize(str)
+    def initialize(str, parse_comments = false, parse_whitespace = false)
       @str = str
+      @parse_comments   = parse_comments
+      @parse_whitespace = parse_whitespace
     end
 
     def parse()
@@ -198,6 +200,7 @@ module SExpr
           end
         
       when :parse_string:
+          # FIXME: "foo\\" will be parsed incorrectly
           if (c == ?" and @last_c != ?\\) then
             submit(:string, true)
           end
@@ -260,10 +263,14 @@ module SExpr
         @tokens << [:list_end, get_pos()]
 
       when :comment
-        # ignore
+        if @parse_comments then
+          @tokens << Comment.new(current_token, get_pos())
+        end
 
       when :whitespace
-        # ignore
+        if @parse_whitespace then
+          @tokens << Whitespace.new(current_token, get_pos())
+        end
 
       else
         raise "Parser Bug: #{type}" 

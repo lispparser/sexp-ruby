@@ -16,6 +16,7 @@
 #  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 require "sexpr.rb"
+require "reader.rb"
 require "parser.rb"
 
 module SExpr
@@ -24,7 +25,23 @@ module SExpr
       if schema.is_a?(SExpr) then
         @schema = schema
       else 
-        @schema SExpr.parse(schema)
+        @schema = SExpr.parse(schema)
+        if @schema.length() == 1 then
+          @schema = @schema[0]
+        else
+          raise "Expected exactly one SExpr, got #{@schema.length}"
+        end
+      end
+
+      parse_scheme(@schema)
+    end
+
+    def parse_scheme(schema)
+      reader = Reader.new(schema)
+      if reader.name != "element" then
+        raise "Expected 'element' tag, got '#{reader.name}'"
+      else
+        @root = Element.new(reader)
       end
     end
 
@@ -37,6 +54,11 @@ module SExpr
     attr_reader :name  # name of the expected element
     attr_reader :use   # required, optional, forbidden
     attr_reader :type  # ListType, IntegerType, ...
+
+    def initialize(reader)
+      @use  = reader.read_string("use")
+      @name = reader.read_string("name")
+    end
     
     def validate(sexpr)
       if not sexpr.is_a?(List) then

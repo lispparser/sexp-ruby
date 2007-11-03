@@ -31,20 +31,20 @@
                     ))))
           (element (name "objects")
             (type (sequence
-                   (children
-                    (element (name "groundpiece")
-                      (type (mapping
-                             (children
-                              (element (name "position") (type (vector2i)))
-                              (element (name "surface")  (type (surface)))))))
+                    (children
+                     (element (name "groundpiece")
+                       (type (mapping
+                              (children
+                               (element (name "position") (type (vector2i)))
+                               (element (name "surface")  (type (surface)))))))
 
-                    (element (name "exit")
-                      (type (mapping
-                             (children
-                              (element (name "position") (type (vector2i)))
-                              (element (name "surface")  (type (surface)))
-                              (element (name "release-rate") (type (int)))))))
-                    ))))
+                     (element (name "exit")
+                       (type (mapping
+                              (children
+                               (element (name "position") (type (vector2i)))
+                               (element (name "surface")  (type (surface)))
+                               (element (name "release-rate") (type (int)))))))
+                     ))))
           ))))
 
 ;; EOF ;;

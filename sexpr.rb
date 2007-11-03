@@ -162,6 +162,20 @@ module SExpr
       return @value.map{|el| el.to_ruby()}
     end
   end
+
+  def Whitespace
+    def initialize(value, pos = nil)
+      super(pos)
+      @value = value
+    end
+  end
+
+  def Commont
+    def initialize(value, pos = nil)
+      super(pos)
+      @value = value
+    end
+  end
 end
 
 # EOF #

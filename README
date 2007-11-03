@@ -9,11 +9,17 @@ like:
 
 is parsed properly, but something like:
 
-  (foo . (bar . (baz . ()))
+  (foo . ((bar . (baz . ())) . ()))
 
-isn't handled.
+isn't handled and gives a syntax error, even so they would be
+equivalent in a full SExpr style parser.
 
-Right: (foo bar)
-Wrong: (foo . bar)
+SExpr isn't meant to be fast, but meant to be as verbose as possible,
+meaning it can give you the line and column of a given SExpr and parse
+comments and whitespace as well if required.
+
+Beside the basic parser SExpr also contains a xschema-like verifier in
+the form of SExpr::Schema and a simple helper in the form of
+SExpr::Reader that gives XPath like features.
 
 # EOF #
