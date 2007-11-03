@@ -34,6 +34,10 @@ module SExpr
     def write(out)
       out << to_s()
     end
+
+    def to_ruby()
+      return @value
+    end
   end
 
   # Boolean
@@ -152,6 +156,10 @@ module SExpr
         end
       }
       out << ")"
+    end
+
+    def to_ruby()
+      return @value.map{|el| el.to_ruby()}
     end
   end
 end

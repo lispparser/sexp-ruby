@@ -4,7 +4,9 @@ require "sexpr.rb"
 require "parser.rb"
 
 if ARGV.empty?() then
-  puts SExpr::SExpr.parse("(pi8ngulevel -.51 a (b +1.5) -5)")
+  SExpr::SExpr.parse("(bla pi8ngulevel -.51 a (b +1.5) -5)").each{|el|
+    puts el.to_ruby.inspect
+  }
 else
   ARGV.each{|filename|
     sexpr = SExpr::SExpr.parse(File.new(filename).read())
