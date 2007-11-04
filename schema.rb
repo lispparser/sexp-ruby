@@ -50,34 +50,46 @@ module SExpr
       @root.validate(sexpr)
     end
 
-    def type_factor(reader)
+    def Schema.type_factory(reader)
       case reader.name
-      when "mapping":
+      when "mapping"
           return MappingType.new(reader)
           
-      when "sequence":
+      when "sequence"
           return SequenceType.new(reader)
 
-      when "choice":
+      when "choice"
           return SequencType.new(reader)
           
-      when "integer":
+      when "integer"
           return IntegerType.new(reader)
         
-      when "real":
+      when "real"
           return RealType.new(reader)
         
-      when "boolean":
+      when "boolean"
           return BooleanType.new(reader)
 
-      when "string":
+      when "string"
           return StringType.new(reader)
 
-      when "symbol":
+      when "symbol"
           return SymbolType.new(reader)
 
-      else:
-          raise "#{reader.pos}: Unknown Type '#{reader.name}'"
+      when "vector2i"
+        return Vector2iType.new(reader)
+
+      when "size"
+        return Vector2iType.new(reader)
+
+      when "surface"
+        return SurfaceType.new(reader)
+
+      when "any"
+          return AnyType.new(reader)
+
+      else
+          raise "#{reader.pos}: unknown type '#{reader.name}'"
       end
   end
   end # Schema
@@ -108,13 +120,18 @@ module SExpr
             if sexpr[0].value != @name then
               raise "#{sexpr.pos}: expected symbol '#{name}', got #{sexpr[0].value}"
             else
-              puts "ok: #{@name}"
+              puts "Element ok: #{@name}"
               # ok, now check type and/or validate children
               type.validate(sexpr[1..-1])
             end
           end            
         end
       end
+    end
+  end
+
+  class AnyType
+    def initialize(reader)
     end
   end
 
@@ -126,14 +143,39 @@ module SExpr
   class StringType
     def initialize(reader)
     end
+
+    def validate(element)
+    end
+  end
+
+  class Vector2iType
+    def initialize(reader)
+    end
+
+    def validate(element)
+    end
+  end
+
+  class ColorType
+    def initialize(reader)
+    end
+  end
+
+  class SurfaceType
+    def initialize(reader)
+    end
   end
 
   class IntegerType
+    def initialize(reader)
+      # FIXME: add min/max and other possible range restrictions here
+    end
+
     def validate(sexpr)
       if sexpr.length() != 1 then
         raise "#{sexpr.pos}: expected a single integer got #{sexpr.to_s}"
       else
-        if not sexpr[0].is_a?(SExpr::Integer) then
+        if not sexpr[0].is_a?(Integer) then
           raise "#{sexpr.pos}: expected integer got #{sexpr[0].class}"
         else
           # ok
@@ -173,10 +215,12 @@ module SExpr
 
     def validate(sexpr)
       sexpr.each{ |el|
-        if not check(el[0].value) then
+        child = @children.find{|i| i.name == el[0].value } # FIXME: Works, but why? Shouldn't String and Symbol clash
+        if not child then
           raise "#{el.pos}: invalid element '#{el[0].value}'"
         else
-          puts "ok: #{el[0].value}"
+          puts "MappingType Child: ok: #{el[0].value} #{child}"
+          child.validate(el)
         end
       }
     end
@@ -189,12 +233,18 @@ module SExpr
     end    
 
     def check_element(name)
-      
+      puts "SequenceType: #{name}"
+      el = @children.find{|i| i.name == name.value }
+      if not el then
+        raise "#{name.pos}: SequenceType: element '#{name}' not allowed"
+      else
+        # ok
+      end
     end
 
     def validate(sexpr) # sexpr == SExpr::List
       sexpr.each{ |el|
-        
+        check_element(el[0])
       }
     end
   end

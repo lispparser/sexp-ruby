@@ -110,7 +110,7 @@ module SExpr
 
     def initialize(value, pos = nil)
       super(pos)
-      @value = value
+      @value = value # FIXME: Is this supposed to be a String or Symbol?
     end
 
     def to_s()

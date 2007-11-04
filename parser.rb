@@ -220,10 +220,6 @@ module SExpr
       end
     end
 
-    def get_pos()
-      return "@line:@column"
-    end
-
     def submit(type, include_current_character)
       @state = :look_for_token
 
@@ -235,41 +231,44 @@ module SExpr
         @token_start = @pos
         @advance = false
       end
-      
+
+      # FIXME: This refers to the end of the token, not the start
+      pretty_pos = "#{@line}:#{@column}"
+     
       case type
       when :boolean
-        @tokens << Boolean.new(current_token == "#t", get_pos())
+        @tokens << Boolean.new(current_token == "#t", pretty_pos)
         
       when :integer
-        @tokens << Integer.new(current_token.to_i, get_pos())
+        @tokens << Integer.new(current_token.to_i, pretty_pos)
 
       when :real
-        @tokens << Real.new(current_token.to_f, get_pos())
+        @tokens << Real.new(current_token.to_f, pretty_pos)
 
       when :string
         @tokens << String.new(current_token[1..-2].
                               gsub("\\n", "\n").
                               gsub("\\\"", "\"").
                               gsub("\\t", "\t"),
-                              get_pos())
+                              pretty_pos)
 
       when :symbol
-        @tokens << Symbol.new(current_token, get_pos())
+        @tokens << Symbol.new(current_token, pretty_pos)
         
       when :list_start
-        @tokens << [:list_start, get_pos()]
+        @tokens << [:list_start, pretty_pos]
 
       when :list_end
-        @tokens << [:list_end, get_pos()]
+        @tokens << [:list_end, pretty_pos]
 
       when :comment
         if @parse_comments then
-          @tokens << Comment.new(current_token, get_pos())
+          @tokens << Comment.new(current_token, pretty_pos)
         end
 
       when :whitespace
         if @parse_whitespace then
-          @tokens << Whitespace.new(current_token, get_pos())
+          @tokens << Whitespace.new(current_token, pretty_pos)
         end
 
       else
