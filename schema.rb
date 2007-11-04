@@ -205,6 +205,8 @@ module SExpr
   class IntegerType
     def initialize(reader)
       # FIXME: add min/max and other possible range restrictions here
+      @min = reader.read_integer("min")
+      @max = reader.read_integer("max")
     end
 
     def validate(sexpr)
@@ -214,7 +216,13 @@ module SExpr
         if not sexpr[0].is_a?(Integer) then
           Schema.report "#{sexpr.pos}: expected integer got #{sexpr[0].class}"
         else
-          # ok
+          if @max and sexpr[0].value > @max then
+            Schema.report "#{sexpr[0].pos}: integer out of range: min=#{@min} max=#{@max} int=#{sexpr[0].value}"
+          elsif @min and sexpr[0].value < @min then
+            Schema.report "#{sexpr[0].pos}: integer out of range: min=#{@min} max=#{@max} int=#{sexpr[0].value}"
+          else
+            # everything ok
+          end
         end
       end
     end
