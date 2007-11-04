@@ -120,6 +120,19 @@ module SExpr
       end
     end
 
+    def read_string_array(name)
+      el = find(name)
+      if not el then
+        return nil
+      else
+        if not el[1..-1].inject(true){|memo, i| memo and i.is_a?(String)} then
+          raise "#{el.pos}: Error expected a String array: #{el.to_sexpr}"
+        else
+          return el[1..-1].map{|i| i.value }
+        end
+      end
+    end
+
     def read_symbol(name)
       el = find(name)
       if not el then

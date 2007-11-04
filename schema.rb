@@ -95,6 +95,9 @@ module SExpr
       when "color"
           return ColorType.new(reader)
 
+      when "enumeration"
+          return EnumerationType.new(reader)
+
       when "any"
           return AnyType.new(reader)
 
@@ -203,6 +206,31 @@ module SExpr
           # ok
         end
       end
+    end
+  end
+
+  class EnumerationType
+    def initialize(reader)
+      @values = reader.read_string_array("values")
+      if not @values then
+        raise "#{reader.pos}: Error: 'values' not specified"
+      end
+    end
+
+    def validate(sexprlst)
+      if sexprlst.length() != 1 then
+        Schema.report "#{sexprlst.pos}: expected a single String got #{sexprlst.to_s}"
+      else
+        if not sexprlst[0].is_a?(String) then
+          Schema.report "#{sexprlst.pos}: expected String got #{sexprlst[0].class}"
+        else
+          if not @values.member?(sexprlst[0].value) then
+            Schema.report "#{sexprlst.pos}: '#{sexprlst[0].value}' not a member of [#{@values.map{|i| i.inspect}.join(", ")}]"
+          else
+            # ok
+          end
+        end
+      end      
     end
   end
 
