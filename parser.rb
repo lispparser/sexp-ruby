@@ -143,7 +143,7 @@ module SExpr
     def scan(c)
       case @state
       when :look_for_token:
-          if is_digit(c) or is_sign(c) then
+          if is_digit(c) or is_sign(c) or c == ?. then
             @state = :parse_integer_or_real
           elsif c == ?\" then
             @state = :parse_string
