@@ -83,6 +83,9 @@ module SExpr
       when "vector2i"
         return Vector2iType.new(reader)
 
+      when "vector3i"
+        return Vector3iType.new(reader)
+
       when "size"
         return SizeType.new(reader)
 
@@ -148,6 +151,7 @@ module SExpr
     end
 
     def validate(sexprlst)
+      # always ok
     end
   end
 
@@ -156,6 +160,15 @@ module SExpr
     end
 
     def validate(sexprlst)
+      if sexprlst.length() != 1 then
+        Schema.report "#{sexpr.pos}: expected a single Symbol got #{sexpr.to_s}"
+      else
+        if not sexprlst[0].is_a?(Symbol) then
+          Schema.report "#{sexpr.pos}: expected Symbol got #{sexpr[0].class}"
+        else
+          # ok
+        end
+      end
     end
   end
 
@@ -164,6 +177,15 @@ module SExpr
     end
 
     def validate(sexprlst)
+      if sexprlst.length() != 1 then
+        Schema.report "#{sexpr.pos}: expected a single String got #{sexpr.to_s}"
+      else
+        if not sexprlst[0].is_a?(String) then
+          Schema.report "#{sexprlst.pos}: expected String got #{sexprlst[0].class}"
+        else
+          # ok
+        end
+      end
     end
   end
 
@@ -172,6 +194,15 @@ module SExpr
     end
 
     def validate(sexprlst)
+      if sexprlst.length() != 1 then
+        Schema.report "#{sexprlst.pos}: expected a single boolean got #{sexprlst.to_s}"
+      else
+        if not sexprlst[0].is_a?(Boolean) then
+          Schema.report "#{sexprlst.pos}: expected Boolean got #{sexprlst[0].class}"
+        else
+          # ok
+        end
+      end
     end
   end
 
@@ -180,7 +211,35 @@ module SExpr
     end
 
     def validate(sexprlst)
-      
+      if sexprlst.length() != 2 then
+        Schema.report "#{sexprlst.pos}: expected a two Integer got #{sexprlst.to_s}"
+      else
+        if not sexprlst[0].is_a?(Integer) or not sexprlst[1].is_a?(Integer) then
+          Schema.report "#{sexprlst.pos}: expected two Integer got #{sexprlst.map{|i| i.class}.join(", ")}"
+        else
+          # ok
+        end
+      end
+    end
+  end
+
+  class Vector3iType
+    def initialize(reader)
+    end
+
+    def validate(sexprlst)
+      if sexprlst.length() != 3 then
+        Schema.report "#{sexprlst.pos}: expected a three Integer got #{sexprlst.to_s}"
+      else
+        if not sexprlst[0].is_a?(Integer) or 
+            not sexprlst[1].is_a?(Integer) or
+            not sexprlst[2].is_a?(Integer)
+        then
+          Schema.report "#{sexprlst.pos}: expected three Integer got #{sexprlst.map{|i| i.class}.join(", ")}"
+        else
+          # ok
+        end
+      end
     end
   end
 

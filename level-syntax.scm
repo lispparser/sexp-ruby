@@ -46,7 +46,7 @@
                        (type (mapping
                               (children
                                (element (name "type")     (type (string)))
-                               (element (name "position") (type (vector2i)))
+                               (element (name "position") (type (vector3i)))
                                (element (name "surface")  (type (surface)))))))
 
                      (element (name "surface-background")
@@ -60,14 +60,14 @@
                                (element (name "keep-aspect") (type (boolean)))
                                (element (name "para-x")      (type (real)))
                                (element (name "para-y")      (type (real)))
-                               (element (name "position")    (type (vector2i)))
+                               (element (name "position")    (type (vector3i)))
                                (element (name "surface")     (type (surface)))))))
 
                      (element (name "liquid")
                        (type (mapping
                               (children
                                (element (name "speed")    (type (integer)) (deprecated #t))
-                               (element (name "position") (type (vector2i)))
+                               (element (name "position") (type (vector3i)))
                                (element (name "surface")  (type (surface)))
                                (element (name "repeat")   (type (integer (min 1))))
                                ))))
@@ -77,7 +77,7 @@
                               (children
                                (element (name "speed")    (type (color)) (deprecated #t))
                                (element (name "parallax") (type (real))  (deprecated #t))
-                               (element (name "position") (type (vector2i)))
+                               (element (name "position") (type (vector3i)))
                                (element (name "surface")  (type (surface)))))))
 
 
@@ -85,7 +85,7 @@
                        (type (mapping
                               (children
                                (element (name "owner-id") (type (integer)))
-                               (element (name "position") (type (vector2i)))
+                               (element (name "position") (type (vector3i)))
                                (element (name "surface")  (type (surface)))
                                ))))
 
@@ -94,7 +94,7 @@
                               (children
                                (element (name "owner-id") (type (any)))
                                (element (name "release-rate") (type (integer)))
-                               (element (name "position") (type (vector2i)))
+                               (element (name "position") (type (vector3i)))
                                (element (name "direction") (type (any)))
                                (element (name "type")     (type (any)))
                                ))))

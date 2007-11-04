@@ -140,7 +140,11 @@ module SExpr
 
     def [](idx)
       if idx.is_a?(Range) then
-        return List.new(@value[idx])
+        if idx.begin < @value.length then
+          return List.new(@value[idx], @value[idx.begin].pos)
+        else # FIXME: When is this called?
+          return List.new(@value[idx], self.pos)
+        end
       else
         return @value[idx]
       end
