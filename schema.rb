@@ -151,7 +151,7 @@ module SExpr
     end
 
     def validate(sexprlst)
-      # always ok
+      Schema.report "#{sexprlst.pos}: AnyType: #{sexprlst.parent.to_sexpr}"
     end
   end
 
@@ -178,7 +178,7 @@ module SExpr
 
     def validate(sexprlst)
       if sexprlst.length() != 1 then
-        Schema.report "#{sexpr.pos}: expected a single String got #{sexpr.to_s}"
+        Schema.report "#{sexprlst.pos}: expected a single String got #{sexprlst.to_s}"
       else
         if not sexprlst[0].is_a?(String) then
           Schema.report "#{sexprlst.pos}: expected String got #{sexprlst[0].class}"

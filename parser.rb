@@ -77,20 +77,21 @@ module SExpr
       @tokens.each{ |token|
         if token.is_a?(SExpr) then
           if not sublists.empty? then
-            sublists.last().append(token)
+            token.parent = sublists.last()
+            sublists.last() << token
           else
             elements << token
           end
         elsif token.is_a?(Array) then
           if token[0] == :list_start then
-            sublists.push(List.new([], token[1]))
+            sublists.push(List.new([], token[1], token[2]))
           elsif token[0] == :list_end then
             if sublists.empty? then
               raise "Unexpected List end"
             else
               lst = sublists.pop()
               if not sublists.empty? then
-                sublists.last().append(lst)
+                sublists.last() << lst
               else
                 elements << lst
               end
@@ -234,41 +235,44 @@ module SExpr
 
       # FIXME: This refers to the end of the token, not the start
       pretty_pos = "#{@line}:#{@column}"
+
+      parent = nil
      
       case type
       when :boolean
-        @tokens << Boolean.new(current_token == "#t", pretty_pos)
+        @tokens << Boolean.new(current_token == "#t", parent, pretty_pos)
         
       when :integer
-        @tokens << Integer.new(current_token.to_i, pretty_pos)
+        @tokens << Integer.new(current_token.to_i, parent, pretty_pos)
 
       when :real
-        @tokens << Real.new(current_token.to_f, pretty_pos)
+        @tokens << Real.new(current_token.to_f, parent, pretty_pos)
 
       when :string
         @tokens << String.new(current_token[1..-2].
                               gsub("\\n", "\n").
                               gsub("\\\"", "\"").
                               gsub("\\t", "\t"),
+                              parent, 
                               pretty_pos)
 
       when :symbol
-        @tokens << Symbol.new(current_token, pretty_pos)
+        @tokens << Symbol.new(current_token, parent, pretty_pos)
         
       when :list_start
-        @tokens << [:list_start, pretty_pos]
+        @tokens << [:list_start, parent, pretty_pos]
 
       when :list_end
-        @tokens << [:list_end, pretty_pos]
+        @tokens << [:list_end, parent, pretty_pos]
 
       when :comment
         if @parse_comments then
-          @tokens << Comment.new(current_token, pretty_pos)
+          @tokens << Comment.new(current_token, parent, pretty_pos)
         end
 
       when :whitespace
         if @parse_whitespace then
-          @tokens << Whitespace.new(current_token, pretty_pos)
+          @tokens << Whitespace.new(current_token, parent, pretty_pos)
         end
 
       else

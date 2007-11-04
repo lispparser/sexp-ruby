@@ -92,12 +92,18 @@
                      (element (name "entrance")
                        (type (mapping
                               (children
-                               (element (name "owner-id") (type (any)))
+                               (element (name "owner-id")     (type (integer (min 0) (max 4))))
                                (element (name "release-rate") (type (integer)))
-                               (element (name "position") (type (vector3i)))
-                               (element (name "direction") (type (any)))
-                               (element (name "type")     (type (any)))
+                               (element (name "position")     (type (vector3i)))
+                               (element (name "direction")    (type (any)))
+                               (element (name "type")         (type (any)))
                                ))))
+
+                     (element (name "solidcolor-background")
+                       (type (any)))
+
+                     (element (name "starfield-background")
+                       (type (any)))
 
                      (element (name "spike")
                        (type (any)))
@@ -130,12 +136,6 @@
                        (type (any)))
 
                      (element (name "switchdoor")
-                       (type (any)))
-
-                     (element (name "solidcolor-background")
-                       (type (any)))
-
-                     (element (name "starfield-background")
                        (type (any)))
 
                      (element (name "thunderstorm-background")

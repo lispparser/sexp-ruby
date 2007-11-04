@@ -20,11 +20,13 @@ require "parser.rb"
 module SExpr
 
   class SExpr
-    attr_reader :pos, :parent
+    attr_reader   :pos
+    attr_accessor :parent
 
     # FIXME: Implement parent handling
-    def initialize(pos = nil)
-      @pos = pos
+    def initialize(parent = nil, pos = nil)
+      @pos    = pos
+      @parent = parent
     end
 
     def self.parse(str)
@@ -39,14 +41,20 @@ module SExpr
     def to_ruby()
       return @value
     end
+    
+    def to_sexpr()
+      out = ""
+      write(out)
+      return out
+    end
   end
 
   # Boolean
   class Boolean < SExpr
     attr_reader :value
 
-    def initialize(value, pos = nil)
-      super(pos)
+    def initialize(value, parent = nil, pos = nil)
+      super(parent, pos)
       @value = value
     end
 
@@ -63,8 +71,8 @@ module SExpr
   class Integer < SExpr
     attr_reader :value
 
-    def initialize(value, pos = nil)
-      super(pos)
+    def initialize(value, parent = nil, pos = nil)
+      super(parent, pos)
       @value = value
     end
 
@@ -77,8 +85,8 @@ module SExpr
   class Real < SExpr
     attr_reader :value
 
-    def initialize(value, pos = nil)
-      super(pos)
+    def initialize(value, parent = nil, pos = nil)
+      super(parent, pos)
       @value = value
     end
 
@@ -91,8 +99,8 @@ module SExpr
   class String < SExpr
     attr_reader :value
 
-    def initialize(value, pos = nil)
-      super(pos)
+    def initialize(value, parent = nil, pos = nil)
+      super(parent, pos)
       @value = value
     end
 
@@ -109,8 +117,8 @@ module SExpr
   class Symbol < SExpr
     attr_reader :value
 
-    def initialize(value, pos = nil)
-      super(pos)
+    def initialize(value, parent = nil, pos = nil)
+      super(parent, pos)
       @value = value # FIXME: Is this supposed to be a String or Symbol?
     end
 
@@ -125,8 +133,8 @@ module SExpr
 
     attr_reader :children, :value
 
-    def initialize(value, pos = nil)
-      super(pos)
+    def initialize(value, parent = nil, pos = nil)
+      super(parent, pos)
       @value = value
     end
 
@@ -141,9 +149,9 @@ module SExpr
     def [](idx)
       if idx.is_a?(Range) then
         if idx.begin < @value.length then
-          return List.new(@value[idx], @value[idx.begin].pos)
+          return List.new(@value[idx], self, @value[idx.begin].pos)
         else # FIXME: When is this called?
-          return List.new(@value[idx], self.pos)
+          return List.new(@value[idx], self, self.pos)
         end
       else
         return @value[idx]
@@ -185,15 +193,15 @@ module SExpr
   end
 
   def Whitespace
-    def initialize(value, pos = nil)
-      super(pos)
+    def initialize(value, parent = nil, pos = nil)
+      super(parent, pos)
       @value = value
     end
   end
 
   def Comment
-    def initialize(value, pos = nil)
-      super(pos)
+    def initialize(value, parent = nil, pos = nil)
+      super(parent, pos)
       @value = value
     end
   end
