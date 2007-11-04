@@ -120,7 +120,7 @@ module SExpr
             if sexpr[0].value != @name then
               raise "#{sexpr.pos}: expected symbol '#{name}', got #{sexpr[0].value}"
             else
-              puts "Element ok: #{@name}"
+              # puts "Element ok: #{@name}"
               # ok, now check type and/or validate children
               type.validate(sexpr[1..-1])
             end
@@ -219,7 +219,7 @@ module SExpr
         if not child then
           raise "#{el.pos}: invalid element '#{el[0].value}'"
         else
-          puts "MappingType Child: ok: #{el[0].value} #{child}"
+          # puts "MappingType Child: ok: #{el[0].value} #{child}"
           child.validate(el)
         end
       }
@@ -233,7 +233,7 @@ module SExpr
     end    
 
     def check_element(name)
-      puts "SequenceType: #{name}"
+      # puts "SequenceType: #{name}"
       el = @children.find{|i| i.name == name.value }
       if not el then
         raise "#{name.pos}: SequenceType: element '#{name}' not allowed"
