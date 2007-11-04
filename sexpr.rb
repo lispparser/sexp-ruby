@@ -20,8 +20,9 @@ require "parser.rb"
 module SExpr
 
   class SExpr
-    attr_reader :pos
+    attr_reader :pos, :parent
 
+    # FIXME: Implement parent handling
     def initialize(pos = nil)
       @pos = pos
     end

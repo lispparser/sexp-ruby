@@ -45,31 +45,38 @@
                      (element (name "groundpiece")
                        (type (mapping
                               (children
+                               (element (name "type")     (type (string)))
                                (element (name "position") (type (vector2i)))
                                (element (name "surface")  (type (surface)))))))
-
-                     (element (name "exit")
-                       (type (mapping
-                              (children
-                               (element (name "position") (type (vector2i)))
-                               (element (name "surface")  (type (surface)))
-                               (element (name "release-rate") (type (integer)))))))
 
                      (element (name "surface-background")
                        (type (mapping
                               (children
-                               (element (name "position") (type (vector2i)))
-                               (element (name "surface")  (type (surface)))))))
+                               (element (name "color")       (type (color)))
+                               (element (name "scroll-x")    (type (real)))
+                               (element (name "scroll-y")    (type (real)))
+                               (element (name "stretch-x")   (type (boolean)))
+                               (element (name "stretch-y")   (type (boolean)))
+                               (element (name "keep-aspect") (type (boolean)))
+                               (element (name "para-x")      (type (real)))
+                               (element (name "para-y")      (type (real)))
+                               (element (name "position")    (type (vector2i)))
+                               (element (name "surface")     (type (surface)))))))
 
                      (element (name "liquid")
                        (type (mapping
                               (children
+                               (element (name "speed")    (type (integer)) (depricated #t))
                                (element (name "position") (type (vector2i)))
-                               (element (name "surface")  (type (surface)))))))
+                               (element (name "surface")  (type (surface)))
+                               (element (name "repeat")   (type (integer (min 1))))
+                               ))))
 
                      (element (name "hotspot")
                        (type (mapping
                               (children
+                               (element (name "speed")    (type (color)) (depricated #t))
+                               (element (name "parallax") (type (real))  (depricated #t))
                                (element (name "position") (type (vector2i)))
                                (element (name "surface")  (type (surface)))))))
 
@@ -77,13 +84,20 @@
                      (element (name "exit")
                        (type (mapping
                               (children
+                               (element (name "owner-id") (type (integer)))
                                (element (name "position") (type (vector2i)))
-                               (element (name "surface")  (type (surface)))))))
+                               (element (name "surface")  (type (surface)))
+                               ))))
 
                      (element (name "entrance")
                        (type (mapping
                               (children
-                               (element (name "position") (type (vector2i)))))))
+                               (element (name "owner-id") (type (any)))
+                               (element (name "release-rate") (type (integer)))
+                               (element (name "position") (type (vector2i)))
+                               (element (name "direction") (type (any)))
+                               (element (name "type")     (type (any)))
+                               ))))
 
                      (element (name "spike")
                        (type (any)))
