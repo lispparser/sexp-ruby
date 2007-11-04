@@ -219,7 +219,7 @@ module SExpr
 
     def validate(sexprlst)
       if sexprlst.length() != 1 then
-        Schema.report "#{sexprlst.pos}: expected a single String got #{sexprlst.to_s}"
+        Schema.report "#{sexprlst.pos}: expected a single String got #{sexprlst.to_sexpr}"
       else
         if not sexprlst[0].is_a?(String) then
           Schema.report "#{sexprlst.pos}: expected String got #{sexprlst[0].class}"
@@ -276,6 +276,16 @@ module SExpr
     end
 
     def validate(sexprlst)
+      if sexprlst.length() != 2 then
+        Schema.report "#{sexprlst.pos}: expected a two Integer got #{sexprlst.to_s}"
+      else
+        if not sexprlst[0].is_a?(Integer) or not sexprlst[1].is_a?(Integer) then
+          Schema.report "#{sexprlst.pos}: expected two Integer got #{sexprlst.to_sexpr}"
+        elsif sexprlst[0].value < 0 or sexprlst[1].value < 0 then
+          Schema.report "#{sexprlst.pos}: size values must be >= 0: got #{sexprlst.to_sexpr}"
+        else
+        end
+      end      
     end
   end
 
@@ -284,6 +294,24 @@ module SExpr
     end
 
     def validate(sexprlst)
+      if sexprlst.length() != 4 then
+        Schema.report "#{sexprlst.pos}: expected a four Real got #{sexprlst.to_s}"
+      else
+        if  not (sexprlst[0].is_a?(Integer) or sexprlst[0].is_a?(Real)) or
+            not (sexprlst[1].is_a?(Integer) or sexprlst[1].is_a?(Real)) or
+            not (sexprlst[2].is_a?(Integer) or sexprlst[2].is_a?(Real)) or
+            not (sexprlst[3].is_a?(Integer) or sexprlst[3].is_a?(Real))
+        then
+          Schema.report "#{sexprlst.pos}: expected three Real got #{sexprlst.to_sexpr}"
+        elsif not (sexprlst[0].value >= 0 and sexprlst[0].value <= 1.0 and
+                   sexprlst[1].value >= 0 and sexprlst[1].value <= 1.0 and
+                   sexprlst[2].value >= 0 and sexprlst[2].value <= 1.0 and
+                   sexprlst[3].value >= 0 and sexprlst[3].value <= 1.0) then
+          Schema.report "#{sexprlst.pos}: Color values must be within [0,1] got #{sexprlst.to_sexpr}"
+        else
+          # ok
+        end
+      end
     end
   end
 

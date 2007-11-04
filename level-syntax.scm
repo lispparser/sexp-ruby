@@ -75,7 +75,7 @@
                      (element (name "hotspot")
                        (type (mapping
                               (children
-                               (element (name "speed")    (type (color)) (deprecated #t))
+                               (element (name "speed")    (type (integer)) (deprecated #t))
                                (element (name "parallax") (type (real))  (deprecated #t))
                                (element (name "position") (type (vector3i)))
                                (element (name "surface")  (type (surface)))))))
@@ -96,7 +96,7 @@
                                (element (name "release-rate") (type (integer)))
                                (element (name "position")     (type (vector3i)))
                                (element (name "direction")    (type (enumeration (values "left" "right" "misc"))))
-                               (element (name "type")         (type (enumeration (values "generic"))))
+                               (element (name "type")         (type (enumeration (values "generic" "woodthing" "cloud"))))
                                ))))
 
                      (element (name "solidcolor-background")
