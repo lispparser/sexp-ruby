@@ -105,10 +105,12 @@ module SExpr
     attr_reader :name  # name of the expected element
     attr_reader :use   # required, optional, forbidden
     attr_reader :type  # ListType, IntegerType, ...
-
+    attr_reader :deprecated # #t, #f
+    
     def initialize(reader)
       @use  = reader.read_string("use")
       @name = reader.read_string("name")
+      @deprecated = reader.read_boolean("deprecated")
       
       type_reader = reader.read_section("type").sections()[0]
       @type = Schema.type_factory(type_reader)
@@ -127,6 +129,10 @@ module SExpr
             if sexpr[0].value != @name then
               Schema.report "#{sexpr.pos}: expected symbol '#{name}', got #{sexpr[0].value}"
             else
+              if @deprecated then
+                Schema.report "#{sexpr.pos}: symbol '#{name}' is deprecated"
+              end
+
               # puts "Element ok: #{@name}"
               # ok, now check type and/or validate children
               type.validate(sexpr[1..-1])
@@ -230,7 +236,8 @@ module SExpr
 
   class RealType
     def initialize(reader)
-      
+      @min = reader.read_real("min")
+      @max = reader.read_real("max")      
     end
 
     def validate(sexpr)
@@ -241,7 +248,13 @@ module SExpr
           # FIXME: Should we make Integer optional?
           Schema.report "#{sexpr.pos}: expected real got #{sexpr[0].class}"
         else
-          # ok
+          if @max and sexpr[0].value > @max then
+            Schema.report "#{sexpr[0].pos}: real out of range: min=#{@min} max=#{@max} real=#{sexpr[0].value}"
+          elsif @min and sexpr[0].value < @min then
+            Schema.report "#{sexpr[0].pos}: real out of range: min=#{@min} max=#{@max} real=#{sexpr[0].value}"
+          else
+            # everything ok
+          end
         end
       end
     end
@@ -253,15 +266,6 @@ module SExpr
       @children = reader.read_section("children").sections.map{|el| Element.new(el) }
     end
 
-    def check(name)
-      @children.each{|i|
-        if i.name == name then
-          return true
-        end
-      }
-      return false
-    end
-
     def validate(sexpr)
       sexpr.each{ |el|
         child = @children.find{|i| i.name == el[0].value } # FIXME: Works, but why? Shouldn't String and Symbol clash
@@ -270,6 +274,7 @@ module SExpr
           Schema.report "  - allowed elements are: #{@children.map{|i| i.name}.join(", ")}"
         else
           # puts "MappingType Child: ok: #{el[0].value} #{child}"
+          # FIXME: Add validation of (use "required") types
           child.validate(el)
         end
       }

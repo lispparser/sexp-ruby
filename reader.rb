@@ -96,7 +96,9 @@ module SExpr
 
     def read_real(name)
       el = find(name)
-      if el.length() != 2 then
+      if not el then
+        return nil
+      elsif el.length() != 2 then
         raise "#{el.pos}: Error expected exactly one integer, got #{el.to_s}"
       elsif (not el[1].is_a?(Real)) and (not el[1].is_a?(Integer)) then
         raise "#{el.pos}: Error expected a Real, got #{el.class}"
@@ -126,6 +128,19 @@ module SExpr
         raise "#{el.pos}: Error expected exactly one symbol, got #{el.to_s}"
       elsif not el[1].is_a?(String) then
         raise "#{el.pos}: Error expected a Symbol, got #{el.class}"
+      else
+        return el[1].value
+      end      
+    end
+
+    def read_boolean(name)
+      el = find(name)
+      if not el then
+        return nil
+      elsif el.length() != 2 then
+        raise "#{el.pos}: Error expected exactly one boolean, got #{el.to_s}"
+      elsif not el[1].is_a?(Boolean) then
+        raise "#{el.pos}: Error expected a Boolean, got #{el.class}"
       else
         return el[1].value
       end      

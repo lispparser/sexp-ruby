@@ -66,7 +66,7 @@
                      (element (name "liquid")
                        (type (mapping
                               (children
-                               (element (name "speed")    (type (integer)) (depricated #t))
+                               (element (name "speed")    (type (integer)) (deprecated #t))
                                (element (name "position") (type (vector2i)))
                                (element (name "surface")  (type (surface)))
                                (element (name "repeat")   (type (integer (min 1))))
@@ -75,8 +75,8 @@
                      (element (name "hotspot")
                        (type (mapping
                               (children
-                               (element (name "speed")    (type (color)) (depricated #t))
-                               (element (name "parallax") (type (real))  (depricated #t))
+                               (element (name "speed")    (type (color)) (deprecated #t))
+                               (element (name "parallax") (type (real))  (deprecated #t))
                                (element (name "position") (type (vector2i)))
                                (element (name "surface")  (type (surface)))))))
 
