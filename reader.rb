@@ -28,7 +28,7 @@ module SExpr
       end
     end
     
-    attr_reader :name
+    attr_reader :name, :pos
 
     def initialize(sexpr)
       if not sexpr.is_a?(List) then
@@ -37,6 +37,7 @@ module SExpr
         raise "#{sexpr.pos}: Error: Reader expected List with one or more elements"
       else
         @name  = sexpr[0].value
+        @pos   = sexpr[0].pos
         @sexpr = sexpr[1..-1]
       end        
     end
@@ -137,6 +138,10 @@ module SExpr
       else
         return nil
       end
+    end
+
+    def sections()
+      return @sexpr.map{|el| Reader.new(el) }
     end
   end
 end

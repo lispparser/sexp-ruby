@@ -9,8 +9,8 @@ if ARGV.length != 2 then
 else
   schema = SExpr::Schema.new(File.new(ARGV[0]).read())
   sexpr  = SExpr::SExpr.parse(File.new(ARGV[1]).read())
-
-  schema.validate(sexpr)
+  # puts schema.inspect
+  schema.validate(sexpr[0])
 end
 
 # EOF #

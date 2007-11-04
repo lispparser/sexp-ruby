@@ -20,6 +20,7 @@ require "reader.rb"
 require "parser.rb"
 
 module SExpr
+
   class Schema
     def initialize(schema)
       if schema.is_a?(SExpr) then
@@ -46,10 +47,41 @@ module SExpr
     end
 
     def validate(sexpr)
-      
+      @root.validate(sexpr)
     end
-  end
 
+    def type_factor(reader)
+      case reader.name
+      when "mapping":
+          return MappingType.new(reader)
+          
+      when "sequence":
+          return SequenceType.new(reader)
+
+      when "choice":
+          return SequencType.new(reader)
+          
+      when "integer":
+          return IntegerType.new(reader)
+        
+      when "real":
+          return RealType.new(reader)
+        
+      when "boolean":
+          return BooleanType.new(reader)
+
+      when "string":
+          return StringType.new(reader)
+
+      when "symbol":
+          return SymbolType.new(reader)
+
+      else:
+          raise "#{reader.pos}: Unknown Type '#{reader.name}'"
+      end
+  end
+  end # Schema
+
   class Element
     attr_reader :name  # name of the expected element
     attr_reader :use   # required, optional, forbidden
@@ -58,13 +90,16 @@ module SExpr
     def initialize(reader)
       @use  = reader.read_string("use")
       @name = reader.read_string("name")
+      
+      type_reader = reader.read_section("type").sections()[0]
+      @type = Schema.type_factory(type_reader)
     end
     
     def validate(sexpr)
       if not sexpr.is_a?(List) then
         raise "#{sexpr.pos}: expected list, got #{sexpr.class}"
       else
-        if sexpr.value.empty() then
+        if sexpr.value.empty? then
           raise "#{sexpr.pos}: expected a non-empty List"
         else
           if not sexpr[0].is_a?(Symbol) then
@@ -73,6 +108,7 @@ module SExpr
             if sexpr[0].value != @name then
               raise "#{sexpr.pos}: expected symbol '#{name}', got #{sexpr[0].value}"
             else
+              puts "ok: #{@name}"
               # ok, now check type and/or validate children
               type.validate(sexpr[1..-1])
             end
@@ -81,7 +117,17 @@ module SExpr
       end
     end
   end
-
+
+  class SymbolType
+    def initialize(reader)
+    end
+  end
+
+  class StringType
+    def initialize(reader)
+    end
+  end
+
   class IntegerType
     def validate(sexpr)
       if sexpr.length() != 1 then
@@ -95,7 +141,7 @@ module SExpr
       end
     end
   end
-
+
   class RealType
     def validate(sexpr)
       if sexpr.length() != 1 then
@@ -109,20 +155,64 @@ module SExpr
       end
     end
   end
-
+
   # A list of ((key value) ...) 
   class MappingType
-    
+    def initialize(reader)
+      @children = reader.read_section("children").sections.map{|el| Element.new(el) }
+    end
+
+    def check(name)
+      @children.each{|i|
+        if i.name == name then
+          return true
+        end
+      }
+      return false
+    end
+
+    def validate(sexpr)
+      sexpr.each{ |el|
+        if not check(el[0].value) then
+          raise "#{el.pos}: invalid element '#{el[0].value}'"
+        else
+          puts "ok: #{el[0].value}"
+        end
+      }
+    end
   end
-  
+  
   # A list of other elements ((foo 5) (bar 10) (baz "foo") ...)
   class SequenceType
-    
+    def initialize(reader)
+      @children = reader.read_section("children").sections.map{|el| Element.new(el) }
+    end    
+
+    def check_element(name)
+      
+    end
+
+    def validate(sexpr) # sexpr == SExpr::List
+      sexpr.each{ |el|
+        
+      }
+    end
   end
-  
+
   class ChoiceType
-    
+    def initialize(reader)
+      @children = reader.read_section("children").sections.map{|el| Element.new(el) }
+    end    
+
+    def validate(sexpr)
+      if sexpr.length() == 1 then
+        # sexpr[0]
+      else
+        raise "Expected exactly one subtag" 
+      end
+    end
   end
+
 end
 
 # EOF #

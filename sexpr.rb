@@ -44,7 +44,7 @@ module SExpr
   class Boolean < SExpr
     attr_reader :value
 
-    def initialize(value, pos)
+    def initialize(value, pos = nil)
       super(pos)
       @value = value
     end
@@ -62,7 +62,7 @@ module SExpr
   class Integer < SExpr
     attr_reader :value
 
-    def initialize(value, pos)
+    def initialize(value, pos = nil)
       super(pos)
       @value = value
     end
@@ -76,7 +76,7 @@ module SExpr
   class Real < SExpr
     attr_reader :value
 
-    def initialize(value, pos)
+    def initialize(value, pos = nil)
       super(pos)
       @value = value
     end
@@ -120,7 +120,9 @@ module SExpr
 
   # (foo bar baz)
   class List < SExpr
-    attr_reader :children  
+    include Enumerable
+
+    attr_reader :children, :value
 
     def initialize(value, pos = nil)
       super(pos)
@@ -131,8 +133,16 @@ module SExpr
       @value << el
     end
 
+    def <<(el)
+      @value << el
+    end
+
     def [](idx)
-      return @value[idx]      
+      if idx.is_a?(Range) then
+        return List.new(@value[idx])
+      else
+        return @value[idx]
+      end
     end
 
     def empty?()
@@ -141,6 +151,12 @@ module SExpr
 
     def length()
       return @value.length 
+    end
+
+    def each()
+      @value.each{|i|
+        yield i
+      }
     end
 
     def to_s()
@@ -170,11 +186,33 @@ module SExpr
     end
   end
 
-  def Commont
+  def Comment
     def initialize(value, pos = nil)
       super(pos)
       @value = value
     end
+  end
+end
+
+class Array
+  def to_sexpr()
+    lst = SExpr::List.new([])
+    each {|el|
+      if el.is_a?(Symbol) then
+        lst << SExpr::Symbol.new(el)
+      elsif el.is_a?(String) then
+        lst << SExpr::String.new(el)
+      elsif el.is_a?(Integer) then
+        lst << SExpr::Integer.new(el)
+      elsif el.is_a?(Float) then
+        lst << SExpr::Real.new(el)
+      elsif el == true or el == false then
+        lst << SExpr::Boolean.new(el)
+      elsif el.is_a?(Array) then
+        lst << el.to_sexpr()
+      end
+    }
+    return lst
   end
 end
 
