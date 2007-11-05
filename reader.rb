@@ -28,7 +28,7 @@ module SExpr
       end
     end
     
-    attr_reader :name, :pos
+    attr_reader :name, :pos, :root
 
     def initialize(sexpr)
       if not sexpr.is_a?(List) then
@@ -36,10 +36,43 @@ module SExpr
       elsif sexpr.length() == 0 then
         raise "#{sexpr.pos}: Error: Reader expected List with one or more elements"
       else
+        @root  = sexpr
         @name  = sexpr[0].value
         @pos   = sexpr[0].pos
         @sexpr = sexpr[1..-1]
       end        
+    end
+
+    def find_many(path)
+      if path.empty? then
+        raise "find_by_path: path must not be empty"
+      else
+        elements = []
+
+        # Find all matching elements
+        @sexpr.each{|el|
+          if not el.is_a?(List) then
+            raise "#{el.pos}: Error: Reader expected List, got #{el.class}"
+          elsif el.length() == 0 then
+            raise "#{el.pos}: Error: Reader expected List with one or more elements"
+          elsif not el[0].is_a?(Symbol) then
+            raise "#{el.pos}: Error: Reader expected Symbol, got #{el.class}"
+          else
+            if el[0].value == path[0] then
+              elements << Reader.new(el)
+            end
+          end
+        }
+
+        if path.length == 1 then
+          return elements.map{|reader| reader.root}
+        else
+          # Do recursive step
+          elements.each{|reader|
+            return reader.find_many(path[1..-1])
+          }
+        end
+      end
     end
 
     def find_by_path(path)
