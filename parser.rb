@@ -25,7 +25,7 @@ module SExpr
     end
 
     def is_letter(c)
-      return((?a..?z).member?(c) or (?A..?Z).member?(c))
+      return (?a..?z).member?(c) or (?A..?Z).member?(c)
     end
 
     def is_whitespace(c)
@@ -33,32 +33,15 @@ module SExpr
     end
 
     def is_special_initial(c)
-      return(c == ?! or
-             c == ?$ or 
-             c == ?% or 
-             c == ?& or 
-             c == ?* or 
-             c == ?/ or 
-             c == ?: or 
-             c == ?< or 
-             c == ?= or 
-             c == ?> or 
-             c == ?? or 
-             c == ?^ or 
-             c == ?_ or 
-             c == ?~)
+      return [?!, ?$, ?%, ?&, ?*, ?/, ?:, ?<, ?=, ?>, ??, ?^, ?_, ?~].member?(c)
     end
 
     def is_special_subsequent(c)
-      return(c == ?+ or
-             c == ?- or
-             c == ?. or
-             c == ?@)
+      return [?+, ?-, ?., ?@].member?(c)
     end
 
     def is_sign(c)
-      return(c == ?+ or
-             c == ?-)
+      return [?+, ?-].member?(c)
     end
     
     def initialize(str, parse_comments = false, parse_whitespace = false)
@@ -68,7 +51,6 @@ module SExpr
     end
 
     def parse()
-      @state = :look_for_token
       tokenize()
 
       elements = []
@@ -106,6 +88,8 @@ module SExpr
     end
 
     def tokenize()
+      @state = :look_for_token
+
       @line   = 1
       @column = 1
 
@@ -201,7 +185,6 @@ module SExpr
           end
         
       when :parse_string:
-          # FIXME: "foo\\" will be parsed incorrectly
           if (c == ?" and @last_c != ?\\) then
             submit(:string, true)
           end
