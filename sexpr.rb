@@ -41,6 +41,9 @@ module SExpr
     def to_ruby()
       return @value
     end
+
+    def strip()
+    end
     
     def to_sexpr()
       out = ""
@@ -138,6 +141,10 @@ module SExpr
       @value = value
     end
 
+    def concat(el)
+      @value.concat(el)
+    end
+
     def append(el)
       @value << el
     end
@@ -169,6 +176,13 @@ module SExpr
     def each()
       @value.each{|i|
         yield i
+      }
+    end
+
+    def strip()
+      @value.delete_if{|el| (el.is_a?(Whitespace) or el.is_a?(Comment)) }
+      @value.each{|el|
+        el.strip()
       }
     end
 
