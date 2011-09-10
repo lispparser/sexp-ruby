@@ -25,7 +25,7 @@ module SExpr
     end
 
     def is_letter(c)
-      return (?a..?z).member?(c) or (?A..?Z).member?(c)
+      return ((?a..?z).member?(c) or (?A..?Z).member?(c))
     end
 
     def is_whitespace(c)

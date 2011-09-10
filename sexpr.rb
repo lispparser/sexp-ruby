@@ -29,8 +29,8 @@ module SExpr
       @parent = parent
     end
 
-    def self.parse(str)
-      parser = Parser.new(str)
+    def self.parse(str, parse_comments = false, parse_whitespace = false)
+      parser = Parser.new(str, parse_comments, parse_whitespace)
       return parser.parse()
     end
 
@@ -105,7 +105,7 @@ module SExpr
     end
 
     def to_s()
-      return @value.to_s # inspect
+      return @value.inspect
     end
     
     def write(out)
@@ -173,18 +173,27 @@ module SExpr
     end
 
     def to_s()
-      return "(" + @value.map{|i| i.to_s}.join(" ") + ")"
+      result = "("
+      needs_whitespace = false
+      @value.each{ |i|
+        if (needs_whitespace and !((i.is_a?(Whitespace) or i.is_a?(Comment)))) then
+          result += " "
+        end
+
+        result += i.to_s
+
+        if (i.is_a?(Whitespace) or i.is_a?(Comment)) then
+          needs_whitespace = false
+        else
+          needs_whitespace = true
+        end
+      }
+      result += ")"
+      return result
     end
 
     def write(out)
-      out << "("
-      @value.each_with_index{|i, idx|
-        i.write(out)
-        if (idx != @value.length()-1) then
-          out << " "
-        end
-      }
-      out << ")"
+      out << to_s()
     end
 
     def to_ruby()
@@ -192,17 +201,33 @@ module SExpr
     end
   end
 
-  def Whitespace
+  class Whitespace < SExpr
     def initialize(value, parent = nil, pos = nil)
       super(parent, pos)
       @value = value
     end
+
+    def write(out)
+      out << @value
+    end
+
+    def to_s()
+      return @value
+    end
   end
 
-  def Comment
+  class Comment < SExpr
     def initialize(value, parent = nil, pos = nil)
       super(parent, pos)
       @value = value
+    end
+
+    def write(out)
+      out << @value
+    end
+
+    def to_s()
+      return @value
     end
   end
 end
