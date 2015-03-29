@@ -22,4 +22,3 @@ Beside the basic parser SExpr also contains a xschema-like verifier in
 the form of SExpr::Schema and a simple helper in the form of
 SExpr::Reader that gives XPath like features.
 
-# EOF #
