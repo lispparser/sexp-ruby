@@ -18,7 +18,7 @@
 require "sexpr.rb"
 
 module SExpr
-  class Reader 
+  class Reader
     def Reader.parse(str)
       lst = SExpr.parse(str)
       if lst.length() == 1 then
@@ -27,7 +27,7 @@ module SExpr
         raise "Error: Reader expected exactly one s-expression, got #{lst.length}"
       end
     end
-    
+
     attr_reader :name, :pos, :root
 
     def initialize(sexpr)
@@ -40,7 +40,7 @@ module SExpr
         @name  = sexpr[0].value
         @pos   = sexpr[0].pos
         @sexpr = sexpr[1..-1]
-      end        
+      end
     end
 
     def find_many(path)
@@ -137,7 +137,7 @@ module SExpr
         raise "#{el.pos}: Error expected a Real, got #{el.class}"
       else
         return el[1].value
-      end      
+      end
     end
 
     def read_string(name)
@@ -201,7 +201,7 @@ module SExpr
         raise "#{el.pos}: Error expected a Symbol, got #{el.class}"
       else
         return el[1].value
-      end      
+      end
     end
 
     def read_boolean(name)
@@ -214,7 +214,7 @@ module SExpr
         raise "#{el.pos}: Error expected a Boolean, got #{el.class}"
       else
         return el[1].value
-      end      
+      end
     end
 
     def read_section(name)

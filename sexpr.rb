@@ -44,7 +44,7 @@ module SExpr
 
     def strip()
     end
-    
+
     def to_sexpr()
       out = ""
       write(out)
@@ -110,7 +110,7 @@ module SExpr
     def to_s()
       return @value.inspect
     end
-    
+
     def write(out)
       out << @value.inspect
     end
@@ -170,7 +170,7 @@ module SExpr
     end
 
     def length()
-      return @value.length 
+      return @value.length
     end
 
     def each()

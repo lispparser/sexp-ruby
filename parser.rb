@@ -19,7 +19,7 @@ require "sexpr.rb"
 
 module SExpr
   class Parser
-   
+
     def is_digit(c)
       return (?0..?9).member?(c)
     end
@@ -43,7 +43,7 @@ module SExpr
     def is_sign(c)
       return [?+, ?-].member?(c)
     end
-    
+
     def initialize(str, parse_comments = false, parse_whitespace = false)
       @str = str
       @parse_comments   = parse_comments
@@ -98,13 +98,13 @@ module SExpr
 
       @pos = 0
       @token_start = @pos
-      
+
       @advance = true
       while(@pos < @str.length) do
         @c = @str[@pos]
 
         scan(@c)
-        
+
         if @advance then
           # Line/Column counting
           if (@c == ?\n) then
@@ -183,7 +183,7 @@ module SExpr
           else
             submit(:symbol, false)
           end
-        
+
       when :parse_string:
           if (c == ?" and @last_c != ?\\) then
             submit(:string, true)
@@ -197,7 +197,7 @@ module SExpr
       when :parse_comment
         if c == ?\n then
           submit(:comment, true)
-        end     
+        end
 
       else
         raise "Parser error, unknown state: #{@state}"
@@ -220,11 +220,11 @@ module SExpr
       pretty_pos = "#{@line}:#{@column}"
 
       parent = nil
-     
+
       case type
       when :boolean
         @tokens << Boolean.new(current_token == "#t", parent, pretty_pos)
-        
+
       when :integer
         @tokens << Integer.new(current_token.to_i, parent, pretty_pos)
 
@@ -236,12 +236,12 @@ module SExpr
                               gsub("\\n", "\n").
                               gsub("\\\"", "\"").
                               gsub("\\t", "\t"),
-                              parent, 
+                              parent,
                               pretty_pos)
 
       when :symbol
         @tokens << Symbol.new(current_token, parent, pretty_pos)
-        
+
       when :list_start
         @tokens << [:list_start, parent, pretty_pos]
 
@@ -259,7 +259,7 @@ module SExpr
         end
 
       else
-        raise "Parser Bug: #{type}" 
+        raise "Parser Bug: #{type}"
       end
       # puts "#{current_token.inspect} => #{type} : #{@line}:#{@column}"
     end

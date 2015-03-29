@@ -5,7 +5,7 @@
   (type (mapping
          (children
           (element (name "version") (type (integer)))
-          (element (name "head") 
+          (element (name "head")
             (type (mapping
                    (children
                     (element (name "levelname")        (type (string)))
@@ -152,7 +152,7 @@
 
                      (element (name "rain-generator")
                        (type (any)))
-                     
+
                      ))))
           ))))
 

@@ -20,12 +20,12 @@ require "reader.rb"
 require "parser.rb"
 
 module SExpr
-  
+
   class Schema
     def initialize(schema)
       if schema.is_a?(SExpr) then
         @schema = schema
-      else 
+      else
         @schema = SExpr.parse(schema)
         if @schema.length() == 1 then
           @schema = @schema[0]
@@ -58,19 +58,19 @@ module SExpr
       case reader.name
       when "mapping"
         return MappingType.new(reader)
-        
+
       when "sequence"
         return SequenceType.new(reader)
 
       when "choice"
         return SequencType.new(reader)
-        
+
       when "integer"
         return IntegerType.new(reader)
-        
+
       when "real"
         return RealType.new(reader)
-        
+
       when "boolean"
         return BooleanType.new(reader)
 
@@ -106,22 +106,22 @@ module SExpr
       end
     end
   end # Schema
-  
+
   class Element
     attr_reader :name  # name of the expected element
     attr_reader :use   # required, optional, forbidden
     attr_reader :type  # ListType, IntegerType, ...
     attr_reader :deprecated # #t, #f
-    
+
     def initialize(reader)
       @use  = reader.read_string("use")
       @name = reader.read_string("name")
       @deprecated = reader.read_boolean("deprecated")
-      
+
       type_reader = reader.read_section("type").sections()[0]
       @type = Schema.type_factory(type_reader)
     end
-    
+
     def validate(sexpr)
       if not sexpr.is_a?(List) then
         Schema.report "#{sexpr.pos}: expected list, got #{sexpr.class}"
@@ -143,12 +143,12 @@ module SExpr
               # ok, now check type and/or validate children
               type.validate(sexpr[1..-1])
             end
-          end            
+          end
         end
       end
     end
   end
-  
+
   class AnyType
     def initialize(reader)
     end
@@ -157,7 +157,7 @@ module SExpr
       Schema.report "#{sexprlst.pos}: AnyType: #{sexprlst.parent.to_sexpr}"
     end
   end
-  
+
   class SymbolType
     def initialize(reader)
     end
@@ -174,7 +174,7 @@ module SExpr
       end
     end
   end
-  
+
   class StringType
     def initialize(reader)
     end
@@ -191,7 +191,7 @@ module SExpr
       end
     end
   end
-  
+
   class BooleanType
     def initialize(reader)
     end
@@ -208,7 +208,7 @@ module SExpr
       end
     end
   end
-  
+
   class EnumerationType
     def initialize(reader)
       @values = reader.read_string_array("values")
@@ -230,10 +230,10 @@ module SExpr
             # ok
           end
         end
-      end      
+      end
     end
   end
-  
+
   class Vector2iType
     def initialize(reader)
     end
@@ -250,7 +250,7 @@ module SExpr
       end
     end
   end
-  
+
   class Vector3iType
     def initialize(reader)
     end
@@ -259,7 +259,7 @@ module SExpr
       if sexprlst.length() != 3 then
         Schema.report "#{sexprlst.pos}: expected a three Integer got #{sexprlst.to_s}"
       else
-        if not sexprlst[0].is_a?(Integer) or 
+        if not sexprlst[0].is_a?(Integer) or
             not sexprlst[1].is_a?(Integer) or
             not sexprlst[2].is_a?(Integer)
         then
@@ -270,7 +270,7 @@ module SExpr
       end
     end
   end
-  
+
   class SizeType
     def initialize(reader)
     end
@@ -286,10 +286,10 @@ module SExpr
         else
           # ok
         end
-      end      
+      end
     end
   end
-  
+
   class ColorType
     def initialize(reader)
     end
@@ -315,7 +315,7 @@ module SExpr
       end
     end
   end
-  
+
   class SurfaceType
     def initialize(reader)
     end
@@ -323,7 +323,7 @@ module SExpr
     def validate(sexprlst)
     end
   end
-  
+
   class IntegerType
     def initialize(reader)
       # FIXME: add min/max and other possible range restrictions here
@@ -349,11 +349,11 @@ module SExpr
       end
     end
   end
-  
+
   class RealType
     def initialize(reader)
       @min = reader.read_real("min")
-      @max = reader.read_real("max")      
+      @max = reader.read_real("max")
     end
 
     def validate(sexpr)
@@ -375,8 +375,8 @@ module SExpr
       end
     end
   end
-  
-  # A list of ((key value) ...) 
+
+  # A list of ((key value) ...)
   class MappingType
     def initialize(reader)
       @children = reader.read_section("children").sections.map{|el| Element.new(el) }
@@ -396,13 +396,13 @@ module SExpr
       }
     end
   end
-  
+
   # A list of elements, duplicates are allowed, optional items are possible
   # ((foo 5) (bar 10) (baz "foo") ...)
   class SequenceType
     def initialize(reader)
       @children = reader.read_section("children").sections.map{|el| Element.new(el) }
-    end    
+    end
 
     def validate(sexprlst) # sexpr == SExpr::List
       sexprlst.each{ |sexpr|
@@ -415,7 +415,7 @@ module SExpr
       }
     end
   end
-  
+
   class ChoiceType
     def initialize(reader)
       @children = reader.read_section("children").sections.map{|el| Element.new(el) }
@@ -438,11 +438,11 @@ module SExpr
           end
         end
       else
-        Schema.report "Expected exactly one subtag" 
+        Schema.report "Expected exactly one subtag"
       end
     end
   end
-  
+
 end
 
 # EOF #
