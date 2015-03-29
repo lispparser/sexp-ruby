@@ -147,7 +147,7 @@ module SExpr
           elsif c == nil then
             # EOF is ok
           else
-            raise "#{@line}:#{@column}: unexpected character '#{c.chr}'"
+            raise "#{@line}:#{@column}: unexpected character #{c} '#{c.chr}'"
           end
 
       when :parse_integer_or_real:
