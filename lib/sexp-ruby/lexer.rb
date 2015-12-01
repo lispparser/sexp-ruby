@@ -21,8 +21,8 @@ require_relative "value.rb"
 
 module SExpr
   class Lexer
-    def initialize(str, parse_comments = false, parse_whitespace = false)
-      @str = str
+    def initialize(text)
+      @str = text
 
       @state = :look_for_token
 
@@ -34,9 +34,6 @@ module SExpr
 
       @pos = 0
       @token_start = @pos
-
-      @parse_comments   = parse_comments
-      @parse_whitespace = parse_whitespace
 
       @advance = true
     end
@@ -160,45 +157,20 @@ module SExpr
       pretty_pos = "#{@line}:#{@column}"
 
       case type
-      when :boolean
-        @tokens << Boolean.new(current_token == "#t", pretty_pos)
-
-      when :integer
-        @tokens << Integer.new(current_token.to_i, pretty_pos)
-
-      when :real
-        @tokens << Real.new(current_token.to_f, pretty_pos)
-
       when :string
-        @tokens << String.new(current_token[1..-2].
-                               gsub("\\n", "\n").
-                               gsub("\\\"", "\"").
-                               gsub("\\t", "\t"),
-                              pretty_pos)
-
-      when :symbol
-        @tokens << Symbol.new(current_token, pretty_pos)
-
+        @tokens << [:string,
+                    current_token[1..-2].
+                      gsub("\\n", "\n").
+                      gsub("\\\"", "\"").
+                      gsub("\\t", "\t"),
+                    pretty_pos]
       when :list_start
-        @tokens << [:list_start, pretty_pos]
-
+        @tokens << [:list_start, current_token, pretty_pos]
       when :list_end
-        @tokens << [:list_end, pretty_pos]
-
-      when :comment
-        if @parse_comments then
-          @tokens << Comment.new(current_token, pretty_pos)
-        end
-
-      when :whitespace
-        if @parse_whitespace then
-          @tokens << Whitespace.new(current_token, pretty_pos)
-        end
-
+        @tokens << [:list_end, current_token, pretty_pos]
       else
-        raise "Parser Bug: #{type}"
+        @tokens << [type, current_token, pretty_pos]
       end
-      # puts "#{current_token.inspect} => #{type} : #{@line}:#{@column}"
     end
 
     def is_digit(c)

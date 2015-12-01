@@ -17,15 +17,17 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
-require_relative "sexp-ruby/lexer.rb"
-require_relative "sexp-ruby/parser.rb"
+require "test/unit"
 
-def SExpr.parse(str, comments=false, whitespace=false)
-  lexer = SExpr::Lexer.new(str)
-  tokens = lexer.tokenize()
+require "sexp-ruby/parser"
 
-  parser = SExpr::Parser.new(comments, whitespace)
-  return parser.parse(tokens)
+class TestParser < Test::Unit::TestCase
+  def test_parser
+    sx_str = "(section (var1 5) (var2 10))"
+    lexer = SExpr::Lexer.new(sx_str)
+    tokens = lexer.tokenize()
+    # puts ">>>>>>>>>>", tokens.inspect
+  end
 end
 
 # EOF #
