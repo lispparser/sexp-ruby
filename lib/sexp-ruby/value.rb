@@ -17,11 +17,9 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
-require "parser.rb"
-
 module SExpr
-
-  class SExpr
+
+  class Value
     attr_reader   :pos
     attr_accessor :parent
 
@@ -29,11 +27,6 @@ module SExpr
     def initialize(parent = nil, pos = nil)
       @pos    = pos
       @parent = parent
-    end
-
-    def self.parse(str, parse_comments = false, parse_whitespace = false)
-      parser = Parser.new(str, parse_comments, parse_whitespace)
-      return parser.parse()
     end
 
     def write(out)
@@ -52,10 +45,14 @@ module SExpr
       write(out)
       return out
     end
+
+    def inspect
+      return to_s
+    end
   end
-
+
   # Boolean
-  class Boolean < SExpr
+  class Boolean < Value
     attr_reader :value
 
     def initialize(value, parent = nil, pos = nil)
@@ -71,9 +68,9 @@ module SExpr
       end
     end
   end
-
+
   # 1025
-  class Integer < SExpr
+  class Integer < Value
     attr_reader :value
 
     def initialize(value, parent = nil, pos = nil)
@@ -85,9 +82,9 @@ module SExpr
       return @value.to_s
     end
   end
-
+
   # 5.1
-  class Real < SExpr
+  class Real < Value
     attr_reader :value
 
     def initialize(value, parent = nil, pos = nil)
@@ -99,9 +96,9 @@ module SExpr
       return @value.to_s
     end
   end
-
+
   # "foo"
-  class String < SExpr
+  class String < Value
     attr_reader :value
 
     def initialize(value, parent = nil, pos = nil)
@@ -117,9 +114,9 @@ module SExpr
       out << @value.inspect
     end
   end
-
+
   # foo
-  class Symbol < SExpr
+  class Symbol < Value
     attr_reader :value
 
     def initialize(value, parent = nil, pos = nil)
@@ -131,9 +128,9 @@ module SExpr
       return @value.to_s
     end
   end
-
+
   # (foo bar baz)
-  class List < SExpr
+  class List < Value
     include Enumerable
 
     attr_reader :children, :value
@@ -217,7 +214,7 @@ module SExpr
     end
   end
 
-  class Whitespace < SExpr
+  class Whitespace < Value
     def initialize(value, parent = nil, pos = nil)
       super(parent, pos)
       @value = value
@@ -232,7 +229,7 @@ module SExpr
     end
   end
 
-  class Comment < SExpr
+  class Comment < Value
     def initialize(value, parent = nil, pos = nil)
       super(parent, pos)
       @value = value
@@ -247,27 +244,5 @@ module SExpr
     end
   end
 end
-
-class Array
-  def to_sexpr()
-    lst = SExpr::List.new([])
-    each {|el|
-      if el.is_a?(Symbol) then
-        lst << SExpr::Symbol.new(el)
-      elsif el.is_a?(String) then
-        lst << SExpr::String.new(el)
-      elsif el.is_a?(Integer) then
-        lst << SExpr::Integer.new(el)
-      elsif el.is_a?(Float) then
-        lst << SExpr::Real.new(el)
-      elsif el == true or el == false then
-        lst << SExpr::Boolean.new(el)
-      elsif el.is_a?(Array) then
-        lst << el.to_sexpr()
-      end
-    }
-    return lst
-  end
-end
-
+
 # EOF #

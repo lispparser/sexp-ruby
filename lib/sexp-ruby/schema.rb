@@ -17,9 +17,9 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
-require "sexpr.rb"
-require "reader.rb"
-require "parser.rb"
+require_relative "value.rb"
+require_relative "reader.rb"
+require_relative "parser.rb"
 
 module SExpr
 

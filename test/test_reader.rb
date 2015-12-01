@@ -1,5 +1,3 @@
-#!/usr/bin/ruby -w
-
 # sexp-ruby - A simple Ruby library for parsing and validating s-expressions
 # Copyright (c) 2007-2015 Ingo Ruhnke <grumbel@gmail.com>
 #
@@ -19,27 +17,33 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
-require "sexp-ruby"
-#require "parser.rb"
-#require "schema.rb"
+require_relative "../lib/sexp-ruby/reader.rb"
 
-if ARGV.length < 2 then
-  puts "Usage: grep.rb EXPRESSION FILES..."
-else
-  expression = ARGV[0].split
-  ARGV[1..-1].each{|i|
-    begin
-      reader = SExpr::Reader.parse(File.new(i).read())
-      results = reader.find_many(expression)
-      if not results.empty? then
-        results.each{|result|
-          puts "#{i}:#{result.pos}: #{result.to_sexpr}"
-        }
-      end
-    rescue RuntimeError
-      puts "#{i}:#{$!}"
-    end
-  }
+require "test/unit"
+
+class TestReader < Test::Unit::TestCase
+
+  def test_simple
+    reader = SExpr::Reader.parse("(pingus-level (head) (bla 5))")
+    assert_equal("pingus-level", reader.name)
+    assert_equal(5, reader.read_integer(["bla"]))
+  end
+
+  def test_from_file()
+    filename = "test/level-syntax.scm"
+
+    reader = SExpr::Reader.parse(File.new(filename).read())
+    # puts reader.name
+    print "Version: "
+    puts reader.read_integer(["version"])
+    print "Title: "
+    puts reader.read_string(["head", "levelname"]).inspect
+    print "Description: "
+    puts reader.read_string(["head", "description"]).inspect
+
+    puts reader.find(["head", "actions"])
+  end
+
 end
 
 # EOF #

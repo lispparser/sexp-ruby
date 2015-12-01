@@ -17,5 +17,15 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
+require_relative "sexp-ruby/lexer.rb"
+require_relative "sexp-ruby/parser.rb"
+
+def SExpr.parse(str, parse_comments = false, parse_whitespace = false)
+  lexer = SExpr::Lexer.new(str, parse_comments, parse_whitespace)
+  tokens = lexer.tokenize()
+
+  parser = SExpr::Parser.new()
+  return parser.parse(tokens)
+end
 
 # EOF #

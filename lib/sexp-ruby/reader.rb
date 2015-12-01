@@ -17,12 +17,14 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
-require "sexpr.rb"
+require_relative "value.rb"
+require_relative "parser.rb"
+require_relative "../sexp-ruby.rb"
 
 module SExpr
   class Reader
     def Reader.parse(str)
-      lst = SExpr.parse(str)
+      lst = SExpr::parse(str)
       if lst.length() == 1 then
         return Reader.new(lst[0])
       else

@@ -1,5 +1,3 @@
-#!/usr/bin/ruby -w
-
 # sexp-ruby - A simple Ruby library for parsing and validating s-expressions
 # Copyright (c) 2007-2015 Ingo Ruhnke <grumbel@gmail.com>
 #
@@ -19,27 +17,16 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
-require "sexp-ruby"
-#require "parser.rb"
-#require "schema.rb"
+require "test/unit"
 
-if ARGV.length < 2 then
-  puts "Usage: grep.rb EXPRESSION FILES..."
-else
-  expression = ARGV[0].split
-  ARGV[1..-1].each{|i|
-    begin
-      reader = SExpr::Reader.parse(File.new(i).read())
-      results = reader.find_many(expression)
-      if not results.empty? then
-        results.each{|result|
-          puts "#{i}:#{result.pos}: #{result.to_sexpr}"
-        }
-      end
-    rescue RuntimeError
-      puts "#{i}:#{$!}"
-    end
-  }
+require "sexp-ruby"
+
+class TestLexer < Test::Unit::TestCase
+  def test_value
+    expect = '[(bla pi8ngulevel -0.51 a (b 1.5) -5)]'
+    result = SExpr::parse("(bla pi8ngulevel -.51 a (b +1.5) -5)")
+    assert_equal(expect, result.to_s)
+  end
 end
 
 # EOF #

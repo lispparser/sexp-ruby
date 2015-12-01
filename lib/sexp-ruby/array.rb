@@ -1,5 +1,3 @@
-#!/usr/bin/ruby -w
-
 # sexp-ruby - A simple Ruby library for parsing and validating s-expressions
 # Copyright (c) 2007-2015 Ingo Ruhnke <grumbel@gmail.com>
 #
@@ -19,27 +17,26 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
-require "sexp-ruby"
-#require "parser.rb"
-#require "schema.rb"
-
-if ARGV.length < 2 then
-  puts "Usage: grep.rb EXPRESSION FILES..."
-else
-  expression = ARGV[0].split
-  ARGV[1..-1].each{|i|
-    begin
-      reader = SExpr::Reader.parse(File.new(i).read())
-      results = reader.find_many(expression)
-      if not results.empty? then
-        results.each{|result|
-          puts "#{i}:#{result.pos}: #{result.to_sexpr}"
-        }
+class Array
+  def to_sexpr()
+    lst = SExpr::List.new([])
+    each {|el|
+      if el.is_a?(Symbol) then
+        lst << SExpr::Symbol.new(el)
+      elsif el.is_a?(String) then
+        lst << SExpr::String.new(el)
+      elsif el.is_a?(Integer) then
+        lst << SExpr::Integer.new(el)
+      elsif el.is_a?(Float) then
+        lst << SExpr::Real.new(el)
+      elsif el == true or el == false then
+        lst << SExpr::Boolean.new(el)
+      elsif el.is_a?(Array) then
+        lst << el.to_sexpr()
       end
-    rescue RuntimeError
-      puts "#{i}:#{$!}"
-    end
-  }
+    }
+    return lst
+  end
 end
 
 # EOF #
