@@ -69,6 +69,13 @@ class TestParser < Test::Unit::TestCase
     assert_true(sxs[0].is_a?(SExpr::List))
     assert_equal(3, sxs[0].length)
   end
+
+  def test_roundtrip
+    content = File.new("test/level-syntax.scm").read()
+    sx = SExpr::parse(content, true, true)
+    result = sx.map{|s| s.to_s}.join
+    assert_equal(content, result)
+  end
 end
 
 # EOF #
