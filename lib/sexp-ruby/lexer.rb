@@ -20,11 +20,26 @@
 require_relative "value.rb"
 
 module SExpr
+  class Token
+    attr_reader :type, :text, :line, :column
+
+    def initialize(type, text, line, column)
+      @type = type
+      @text = text
+      @line = line
+      @column = column
+    end
+
+    def inspect
+      return "[#{@type.inspect}, #{@text.inspect}, #{@line}, #{@column}]"
+    end
+  end
+
   class Lexer
     def initialize(text)
       @str = text
 
-      @state = :look_for_token
+      @statefunc = method(:look_for_token)
 
       @line   = 1
       @column = 1
@@ -42,11 +57,11 @@ module SExpr
       while(@pos < @str.length) do
         c = @str[@pos]
 
-        scan(c)
+        @statefunc.call(c)
 
         if @advance then
           # Line/Column counting
-          if (c == ?\n) then
+          if (c == "\n") then
             @line   += 1
             @column  = 1
           else
@@ -64,85 +79,86 @@ module SExpr
       return @tokens
     end
 
-    def scan(c)
-      case @state
-      when :look_for_token
-        if is_digit(c) or is_sign(c) or c == ?. then
-          @state = :parse_integer_or_real
-        elsif c == "\"" then
-          @state = :parse_string
-        elsif c == "#" then
-          @state = :parse_boolean
-        elsif is_letter(c) or is_special_initial(c) then
-          @state = :parse_symbol
-        elsif is_whitespace(c) then
-          @state = :parse_whitespace
-        elsif c == ";" then
-          @state = :parse_comment
-        elsif c == ")" then
-          submit(:list_end, true)
-        elsif c == "(" then
-          submit(:list_start, true)
-        else
-          raise "#{@line}:#{@column}: unexpected character #{c} '#{c.chr}'"
-        end
-
-      when :parse_integer_or_real
-        if is_digit(c) then
-        # ok
-        elsif c == ?. then
-          @state = :parse_real
-        else
-          if @token_start == @pos - 1 and not is_digit(@str[@token_start]) then
-            raise "#{@line}:#{@column}: '#{@str[@token_start].chr}' must be followed by digit"
-          else
-            submit(:integer, false)
-          end
-        end
-
-      when :parse_boolean
-        if c == ?t or c == ?f then
-                        submit(:boolean, true)
-                      else
-                        raise "#{@line}:#{@column}: expected 'f' or 't', got '#{c.chr}"
-        end
-
-      when :parse_real
-        if (?0..?9).member?(c) then
-        # ok
-        else
-          submit(:real, false)
-        end
-
-      when :parse_symbol
-        if is_letter(c) or is_digit(c) or is_special_subsequent(c) or is_special_initial(c) then
-        # ok
-        else
-          submit(:symbol, false)
-        end
-
-      when :parse_string
-        if (c == ?" and @last_c != ?\\) then
-          submit(:string, true)
-        end
-
-      when :parse_whitespace
-        if not is_whitespace(c) then
-          submit(:whitespace, false)
-        end
-
-      when :parse_comment
-        if c == ?\n then
-             submit(:comment, true)
-        end
-
+    def look_for_token(c)
+      if is_digit(c) or is_sign(c) or c == ?. then
+        @statefunc = method(:parse_integer_or_real)
+      elsif c == "\"" then
+        @statefunc = method(:parse_string)
+      elsif c == "#" then
+        @statefunc = method(:parse_boolean)
+      elsif is_letter(c) or is_special_initial(c) then
+        @statefunc = method(:parse_symbol)
+      elsif is_whitespace(c) then
+        @statefunc = method(:parse_whitespace)
+      elsif c == ";" then
+        @statefunc = method(:parse_comment)
+      elsif c == ")" then
+        submit(:list_end, true)
+      elsif c == "(" then
+        submit(:list_start, true)
       else
-        raise "Parser error, unknown state: #{@state}"
+        raise "#{@line}:#{@column}: unexpected character #{c} '#{c.chr}'"
+      end
+    end
+
+    def parse_integer_or_real(c)
+      if is_digit(c) then
+      # ok
+      elsif c == ?. then
+        @statefunc = method(:parse_real)
+      else
+        if @token_start == @pos - 1 and not is_digit(@str[@token_start]) then
+          raise "#{@line}:#{@column}: '#{@str[@token_start].chr}' must be followed by digit"
+        else
+          submit(:integer, false)
+        end
+      end
+    end
+
+    def parse_boolean(c)
+      if c == "t" or c == "f" then
+        submit(:boolean, true)
+      else
+        raise "#{@line}:#{@column}: expected 'f' or 't', got '#{c.chr}"
+      end
+    end
+
+    def parse_real(c)
+      if ("0".."9").member?(c) then
+      # ok
+      else
+        submit(:real, false)
+      end
+    end
+
+    def parse_symbol(c)
+      if is_letter(c) or is_digit(c) or is_special_subsequent(c) or is_special_initial(c) then
+      # ok
+      else
+        submit(:symbol, false)
+      end
+    end
+
+    def parse_string(c)
+      if (c == "\"" and @last_c != "\\") then
+        submit(:string, true)
+      end
+    end
+
+    def parse_whitespace(c)
+      if not is_whitespace(c) then
+        submit(:whitespace, false)
+      end
+    end
+
+    def parse_comment(c)
+      if c == "\n" then
+        submit(:comment, true)
       end
     end
 
     def submit(type, include_current_character)
-      @state = :look_for_token
+      @statefunc = method(:look_for_token)
 
       if include_current_character then
         current_token = @str[@token_start..(@pos)]
@@ -153,23 +169,22 @@ module SExpr
         @advance = false
       end
 
-      # FIXME: This refers to the end of the token, not the start
-      pretty_pos = "#{@line}:#{@column}"
+      # FIXME: line:column refers to the end of the token, not the start
 
       case type
       when :string
-        @tokens << [:string,
-                    current_token[1..-2].
-                      gsub("\\n", "\n").
-                      gsub("\\\"", "\"").
-                      gsub("\\t", "\t"),
-                    pretty_pos]
+        @tokens << Token.new(:string,
+                             current_token[1..-2].
+                               gsub("\\n", "\n").
+                               gsub("\\\"", "\"").
+                               gsub("\\t", "\t"),
+                             @line, @column)
       when :list_start
-        @tokens << [:list_start, current_token, pretty_pos]
+        @tokens << Token.new(:list_start, current_token, @line, @column)
       when :list_end
-        @tokens << [:list_end, current_token, pretty_pos]
+        @tokens << Token.new(:list_end, current_token, @line, @column)
       else
-        @tokens << [type, current_token, pretty_pos]
+        @tokens << Token.new(type, current_token, @line, @column)
       end
     end
 

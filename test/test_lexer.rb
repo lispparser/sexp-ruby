@@ -24,9 +24,24 @@ require "sexp-ruby/lexer"
 class TestLexer < Test::Unit::TestCase
   def test_tokenize
     sx_str = "(section (var1 5) (var2 10))"
+    expected = [[:list_start, "(", 1, 1],
+                [:symbol, "section", 1, 9],
+                [:whitespace, " ", 1, 10],
+                [:list_start, "(", 1, 10],
+                [:symbol, "var1", 1, 15],
+                [:whitespace, " ", 1, 16],
+                [:integer, "5", 1, 17],
+                [:list_end, ")", 1, 17],
+                [:whitespace, " ", 1, 19],
+                [:list_start, "(", 1, 19],
+                [:symbol, "var2", 1, 24],
+                [:whitespace, " ", 1, 25],
+                [:integer, "10", 1, 27],
+                [:list_end, ")", 1, 27],
+                [:list_end, ")", 1, 28]]
     lexer = SExpr::Lexer.new(sx_str)
-    tokens = lexer.tokenize()
-    # puts ">>>>>>>>>>", tokens.inspect
+    result = lexer.tokenize()
+    assert_equal(expected.to_s, result.to_s)
   end
 end
 

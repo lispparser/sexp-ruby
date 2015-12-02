@@ -21,6 +21,15 @@ require_relative "value.rb"
 require_relative "lexer.rb"
 
 module SExpr
+  class Position
+    attr_reader :line, :column
+
+    def initialize(line, column)
+      @line = line
+      @column = column
+    end
+  end
+
   class Parser
     def initialize(comments=false, whitespace=false)
       @parse_comments = comments
@@ -31,12 +40,10 @@ module SExpr
       elements = []
       sublists = []
 
-      tokens.each{ |pack|
-        type, token, pretty_pos = *pack
-
-        case type
+      tokens.each{ |token|
+        case token.type
         when :list_start
-          sublists.push(List.new([], pos: pretty_pos))
+          sublists.push(List.new([], pos: Position.new(token.line, token.column)))
         when :list_end
           if sublists.empty? then
             raise "Unexpected List end"
@@ -49,7 +56,7 @@ module SExpr
             end
           end
         else
-          sx = create_sexp(*pack)
+          sx = create_sexp(token)
           if sx == nil
           else
             if not sublists.empty? then
@@ -65,33 +72,35 @@ module SExpr
       return elements
     end
 
-    def create_sexp(type, token, pretty_pos)
-      case type
+    def create_sexp(token)
+      pretty_pos = Position.new(token.line, token.column)
+
+      case token.type
       when :boolean
-        return Boolean.new(token == "#t", pretty_pos)
+        return Boolean.new(token.text == "#t", pretty_pos)
 
       when :integer
-        return Integer.new(Integer(token), pretty_pos)
+        return Integer.new(Integer(token.text), pretty_pos)
 
       when :real
-        return Real.new(Float(token), pretty_pos)
+        return Real.new(Float(token.text), pretty_pos)
 
       when :string
-        return String.new(token, pretty_pos)
+        return String.new(token.text, pretty_pos)
 
       when :symbol
-        return Symbol.new(token, pretty_pos)
+        return Symbol.new(token.text, pretty_pos)
 
       when :comment
         if @parse_comments then
-          return Comment.new(token, pretty_pos)
+          return Comment.new(token.text, pretty_pos)
         else
           return nil
         end
 
       when :whitespace
         if @parse_whitespace then
-          return Whitespace.new(token, pretty_pos)
+          return Whitespace.new(token.text, pretty_pos)
         else
           return nil
         end

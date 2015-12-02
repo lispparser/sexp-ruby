@@ -25,7 +25,7 @@ module SExpr
 
     # FIXME: Implement parent handling
     def initialize(parent = nil, pos = nil)
-      @pos    = pos
+      @pos = pos
       @parent = parent
     end
 
