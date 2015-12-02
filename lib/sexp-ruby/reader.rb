@@ -23,7 +23,7 @@ require_relative "../sexp-ruby.rb"
 
 module SExpr
   class Reader
-    def Reader.parse(str)
+    def Reader.from_string(str)
       lst = SExpr::parse(str)
       if lst.length() == 1 then
         return Reader.new(lst[0])
@@ -71,10 +71,11 @@ module SExpr
         if path.length == 1 then
           return elements.map{|reader| reader.root}
         else
-          # Do recursive step
+          results = []
           elements.each{|reader|
-            return reader.find_many(path[1..-1])
+            results += reader.find_many(path[1..-1])
           }
+          return results
         end
       end
     end

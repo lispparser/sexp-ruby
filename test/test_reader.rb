@@ -24,7 +24,8 @@ require "test/unit"
 class TestReader < Test::Unit::TestCase
 
   def test_simple
-    reader = SExpr::Reader.parse("(pingus-level (head) (bla 5))")
+    reader = SExpr::Reader.from_string("(pingus-level (head) (bla 5))")
+    puts "XXXX", reader.find_many(["bla"]).inspect
     assert_equal("pingus-level", reader.name)
     assert_equal(5, reader.read_integer(["bla"]))
   end
@@ -32,7 +33,7 @@ class TestReader < Test::Unit::TestCase
   def test_from_file()
     filename = "test/level-syntax.scm"
 
-    reader = SExpr::Reader.parse(File.new(filename).read())
+    reader = SExpr::Reader.from_string(File.new(filename).read())
     # puts reader.name
     print "Version: "
     puts reader.read_integer(["version"])

@@ -40,12 +40,6 @@ module SExpr
     def strip()
     end
 
-    def to_sexpr()
-      out = ""
-      write(out)
-      return out
-    end
-
     def inspect
       return to_s
     end

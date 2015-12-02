@@ -28,6 +28,10 @@ module SExpr
       @line = line
       @column = column
     end
+
+    def to_s
+      return "#{line}:#{column}"
+    end
   end
 
   class Parser
@@ -43,7 +47,7 @@ module SExpr
       tokens.each{ |token|
         case token.type
         when :list_start
-          sublists.push(List.new([], pos: Position.new(token.line, token.column)))
+          sublists.push(List.new([], nil, Position.new(token.line, token.column)))
         when :list_end
           if sublists.empty? then
             raise "Unexpected List end"
@@ -77,30 +81,30 @@ module SExpr
 
       case token.type
       when :boolean
-        return Boolean.new(token.text == "#t", pretty_pos)
+        return Boolean.new(token.text == "#t", nil, pretty_pos)
 
       when :integer
-        return Integer.new(Integer(token.text), pretty_pos)
+        return Integer.new(Integer(token.text), nil, pretty_pos)
 
       when :real
-        return Real.new(Float(token.text), pretty_pos)
+        return Real.new(Float(token.text), nil, pretty_pos)
 
       when :string
-        return String.new(token.text, pretty_pos)
+        return String.new(token.text, nil, pretty_pos)
 
       when :symbol
-        return Symbol.new(token.text, pretty_pos)
+        return Symbol.new(token.text, nil, pretty_pos)
 
       when :comment
         if @parse_comments then
-          return Comment.new(token.text, pretty_pos)
+          return Comment.new(token.text, nil, pretty_pos)
         else
           return nil
         end
 
       when :whitespace
         if @parse_whitespace then
-          return Whitespace.new(token.text, pretty_pos)
+          return Whitespace.new(token.text, nil, pretty_pos)
         else
           return nil
         end

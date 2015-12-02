@@ -20,22 +20,47 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 require "sexp-ruby"
-#require "parser.rb"
-#require "schema.rb"
+require "sexp-ruby/reader"
 
-if ARGV.length < 2 then
-  puts "Usage: grep.rb EXPRESSION FILES..."
-else
-  expression = ARGV[0].split
-  ARGV[1..-1].each{|i|
-    begin
-      reader = SExpr::Reader.parse(File.new(i).read())
-      results = reader.find_many(expression)
+def sexp_grep(filename, reader, path)
+  if path.empty?
+    return []
+  else
+    if reader.name != path[0]
+      return []
+    else
+      rest_path = path[1..-1]
+      if rest_path.empty?
+        results = [reader.root]
+      else
+        results = reader.find_many(rest_path)
+      end
       if not results.empty? then
-        results.each{|result|
-          puts "#{i}:#{result.pos}: #{result.to_sexpr}"
+        results.each{|sx|
+          if sx.length == 1
+            puts "#{filename}:#{sx.pos}: #{sx}"
+          else
+            str = sx[1..-1].map{|s| s.to_s }.join(" ")
+            puts "#{filename}:#{sx.pos}: #{str}"
+          end
         }
       end
+    end
+  end
+end
+
+
+if ARGV.length < 2 then
+  puts "Usage: #{__FILE__} EXPRESSION FILES..."
+else
+  expression = ARGV[0].split
+
+  ARGV[1..-1].each{|i|
+    begin
+      text = File.new(i).read()
+      reader = SExpr::Reader.from_string(text)
+
+      sexp_grep(i, reader, expression)
     rescue RuntimeError
       puts "#{i}:#{$!}"
     end
