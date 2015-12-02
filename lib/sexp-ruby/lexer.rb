@@ -95,11 +95,15 @@ module SExpr
         end
       end
 
+      @statefunc.call(nil)
+
       return @tokens
     end
 
     def look_for_token(c)
-      if is_digit(c) or is_sign(c) or c == "." then
+      if c == nil
+        # eof
+      elsif is_digit(c) or is_sign(c) or c == "." then
         @statefunc = method(:parse_integer_or_real)
       elsif c == "\"" then
         @statefunc = method(:parse_string)
@@ -116,7 +120,7 @@ module SExpr
       elsif c == "(" then
         submit(:list_start, true)
       else
-        raise "#{@io.line}:#{@io.column}: unexpected character #{c} '#{c.chr}'"
+        raise "#{@io.line}:#{@io.column}: unexpected character #{c.inspect}"
       end
     end
 
@@ -216,19 +220,19 @@ module SExpr
     end
 
     def is_whitespace(c)
-      return " \n\t".include?(c)
+      return [" ", "\n", "\t"].member?(c)
     end
 
     def is_special_initial(c)
-      return "!$%&*/:<=>?^_~".include?(c)
+      return ["!", "$", "%", "&", "*", "/", ":", "<", "=", ">", "?", "^", "_", "~"].member?(c)
     end
 
     def is_special_subsequent(c)
-      return "+-.@".include?(c)
+      return ["+", "-", ".", "@"].member?(c)
     end
 
     def is_sign(c)
-      return "+-".include?(c)
+      return ["+", "-"].member?(c)
     end
   end
 end

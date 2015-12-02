@@ -25,7 +25,9 @@ def SExpr.parse(str, comments=false, whitespace=false)
   tokens = lexer.tokenize()
 
   parser = SExpr::Parser.new(comments, whitespace)
-  return parser.parse(tokens)
+  sx = parser.parse(tokens)
+
+  return sx
 end
 
 # EOF #

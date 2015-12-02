@@ -20,6 +20,7 @@
 require "test/unit"
 
 require "sexp-ruby/parser"
+require "sexp-ruby"
 
 class TestParser < Test::Unit::TestCase
   def test_parser
@@ -27,6 +28,46 @@ class TestParser < Test::Unit::TestCase
     lexer = SExpr::Lexer.new(sx_str)
     tokens = lexer.tokenize()
     # puts ">>>>>>>>>>", tokens.inspect
+  end
+
+  def test_boolean
+    sxs = SExpr::parse("  #f #t  ")
+    assert_true(sxs[0].is_a?(SExpr::Boolean))
+    assert_true(sxs[1].is_a?(SExpr::Boolean))
+    assert_equal(false, sxs[0].value)
+    assert_equal(true, sxs[1].value)
+  end
+
+  def test_integer
+    sxs = SExpr::parse(" 12 43")
+    assert_true(sxs[0].is_a?(SExpr::Integer))
+    assert_equal(12, sxs[0].value)
+    assert_true(sxs[1].is_a?(SExpr::Integer))
+    assert_equal(43, sxs[1].value)
+  end
+
+  def test_real
+    sxs = SExpr::parse("1.125")
+    assert_true(sxs[0].is_a?(SExpr::Real))
+    assert_equal(1.125, sxs[0].value)
+  end
+
+  def test_string
+    sxs = SExpr::parse("  \"Hello World\"  ")
+    assert_true(sxs[0].is_a?(SExpr::String))
+    assert_equal("Hello World", sxs[0].value)
+  end
+
+  def test_symbol
+    sxs = SExpr::parse("  HelloWorld  ")
+    assert_true(sxs[0].is_a?(SExpr::Symbol))
+    assert_equal("HelloWorld", sxs[0].value)
+  end
+
+  def test_list
+    sxs = SExpr::parse("  (1 2 3)  ")
+    assert_true(sxs[0].is_a?(SExpr::List))
+    assert_equal(3, sxs[0].length)
   end
 end
 
