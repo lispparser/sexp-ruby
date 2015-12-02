@@ -35,42 +35,61 @@ module SExpr
     end
   end
 
-  class Lexer
+  class TextIO
+    attr_reader :text, :line, :column, :pos
+
     def initialize(text)
-      @str = text
-
-      @statefunc = method(:look_for_token)
-
+      @text = text
       @line   = 1
       @column = 1
+      @pos = 0
+    end
+
+    def peek()
+      return @text[@pos]
+    end
+
+    def advance()
+      # Line/Column counting
+      if peek() == "\n" then
+        @line   += 1
+        @column  = 1
+      else
+        @column += 1
+      end
+
+      @pos += 1
+    end
+
+    def eof?
+      return !(@pos < @text.length)
+    end
+  end
+
+  class Lexer
+    def initialize(text)
+      @io = TextIO.new(text)
+
+      @statefunc = method(:look_for_token)
 
       @last_c = nil
       @tokens = []
 
-      @pos = 0
-      @token_start = @pos
+      @token_start = @io.pos
 
       @advance = true
     end
 
     def tokenize()
-      while(@pos < @str.length) do
-        c = @str[@pos]
+      while not @io.eof? do
+        c = @io.peek()
 
         @statefunc.call(c)
 
         if @advance then
-          # Line/Column counting
-          if (c == "\n") then
-            @line   += 1
-            @column  = 1
-          else
-            @column += 1
-          end
-
           @last_c = c
 
-          @pos += 1
+          @io.advance
         else
           @advance = true
         end
@@ -80,7 +99,7 @@ module SExpr
     end
 
     def look_for_token(c)
-      if is_digit(c) or is_sign(c) or c == ?. then
+      if is_digit(c) or is_sign(c) or c == "." then
         @statefunc = method(:parse_integer_or_real)
       elsif c == "\"" then
         @statefunc = method(:parse_string)
@@ -97,7 +116,7 @@ module SExpr
       elsif c == "(" then
         submit(:list_start, true)
       else
-        raise "#{@line}:#{@column}: unexpected character #{c} '#{c.chr}'"
+        raise "#{@io.line}:#{@io.column}: unexpected character #{c} '#{c.chr}'"
       end
     end
 
@@ -107,8 +126,8 @@ module SExpr
       elsif c == ?. then
         @statefunc = method(:parse_real)
       else
-        if @token_start == @pos - 1 and not is_digit(@str[@token_start]) then
-          raise "#{@line}:#{@column}: '#{@str[@token_start].chr}' must be followed by digit"
+        if @token_start == @io.pos - 1 and not is_digit(@io.text[@token_start]) then
+          raise "#{@io.line}:#{@io.column}: '#{@io.text[@token_start].chr}' must be followed by digit"
         else
           submit(:integer, false)
         end
@@ -161,11 +180,11 @@ module SExpr
       @statefunc = method(:look_for_token)
 
       if include_current_character then
-        current_token = @str[@token_start..(@pos)]
-        @token_start = @pos+1
+        current_token = @io.text[@token_start..(@io.pos)]
+        @token_start = @io.pos+1
       else
-        current_token = @str[@token_start..(@pos-1)]
-        @token_start = @pos
+        current_token = @io.text[@token_start..(@io.pos-1)]
+        @token_start = @io.pos
         @advance = false
       end
 
@@ -178,13 +197,13 @@ module SExpr
                                gsub("\\n", "\n").
                                gsub("\\\"", "\"").
                                gsub("\\t", "\t"),
-                             @line, @column)
+                             @io.line, @io.column)
       when :list_start
-        @tokens << Token.new(:list_start, current_token, @line, @column)
+        @tokens << Token.new(:list_start, current_token, @io.line, @io.column)
       when :list_end
-        @tokens << Token.new(:list_end, current_token, @line, @column)
+        @tokens << Token.new(:list_end, current_token, @io.line, @io.column)
       else
-        @tokens << Token.new(type, current_token, @line, @column)
+        @tokens << Token.new(type, current_token, @io.line, @io.column)
       end
     end
 
