@@ -21,10 +21,10 @@ require_relative "value.rb"
 require_relative "parser.rb"
 require_relative "../sexp-ruby.rb"
 
-module SExpr
+module SExp
   class Reader
     def Reader.from_string(str)
-      lst = SExpr::parse(str)
+      lst = SExp::parse(str)
       if lst.length() == 1 then
         return Reader.new(lst[0])
       else

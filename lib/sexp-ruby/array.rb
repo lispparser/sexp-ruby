@@ -18,19 +18,19 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 class Array
-  def to_sexpr()
-    lst = SExpr::List.new([])
+  def to_sexp()
+    lst = SExp::List.new([])
     each {|el|
       if el.is_a?(Symbol) then
-        lst << SExpr::Symbol.new(el)
+        lst << SExp::Symbol.new(el)
       elsif el.is_a?(String) then
-        lst << SExpr::String.new(el)
+        lst << SExp::String.new(el)
       elsif el.is_a?(Integer) then
-        lst << SExpr::Integer.new(el)
+        lst << SExp::Integer.new(el)
       elsif el.is_a?(Float) then
-        lst << SExpr::Real.new(el)
+        lst << SExp::Real.new(el)
       elsif el == true or el == false then
-        lst << SExpr::Boolean.new(el)
+        lst << SExp::Boolean.new(el)
       elsif el.is_a?(Array) then
         lst << el.to_sexpr()
       end

@@ -27,12 +27,12 @@ class TestSchema
 
   def test_schema
     content = File.new(filename).read()
-    schema = SExpr::Schema.new(content)
+    schema = SExp::Schema.new(content)
 
     ARGV[1..-1].each{|i|
       begin
         puts "Validating: #{i}"
-        sexpr  = SExpr::SExpr.parse(File.new(i).read())
+        sexpr  = SExp::SExp.parse(File.new(i).read())
         # puts schema.inspect
         schema.validate(sexpr[0])
       rescue RuntimeError

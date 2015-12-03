@@ -39,7 +39,7 @@ class TestLexer < Test::Unit::TestCase
                 [:integer, "10", 1, 27],
                 [:list_end, ")", 1, 27],
                 [:list_end, ")", 1, 28]]
-    lexer = SExpr::Lexer.new(sx_str)
+    lexer = SExp::Lexer.new(sx_str)
     result = lexer.tokenize()
     assert_equal(expected.to_s, result.to_s)
   end

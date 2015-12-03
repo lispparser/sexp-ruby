@@ -19,7 +19,7 @@
 
 require_relative "value.rb"
 
-module SExpr
+module SExp
   class Token
     attr_reader :type, :text, :line, :column
 

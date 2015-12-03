@@ -24,7 +24,7 @@ require "sexp-ruby"
 class TestLexer < Test::Unit::TestCase
   def test_value
     expect = '[(bla pi8ngulevel -0.51 a (b 1.5) -5)]'
-    result = SExpr::parse("(bla pi8ngulevel -.51 a (b +1.5) -5)")
+    result = SExp::parse("(bla pi8ngulevel -.51 a (b +1.5) -5)")
     assert_equal(expect, result.to_s)
   end
 end

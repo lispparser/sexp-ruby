@@ -8,11 +8,11 @@ require "schema.rb"
 # Script to rewrite (switchdoor ...) to (switchdoor-switch ...) and (switchdoor-door ...)
 def rewrite_sexpr(sexpr)
   case sexpr
-  when SExpr::List
+  when SExp::List
     case sexpr[0].to_s
     when "switchdoor"
       sexpr.strip()
-      reader = SExpr::Reader.new(sexpr)
+      reader = SExp::Reader.new(sexpr)
 
       switch_reader = reader.read_section("switch")
       switch_pos = switch_reader.read_real_array("position")
@@ -23,26 +23,26 @@ def rewrite_sexpr(sexpr)
 
       id = "id#{rand(2**32)}"
 
-      return [SExpr::List.new([SExpr::Symbol.new("switchdoor-switch"),
-                               SExpr::Whitespace.new("\n      "),
-                               SExpr::List.new([SExpr::Symbol.new("target-id"),
-                                                SExpr::String.new(id)]),
-                               SExpr::Whitespace.new("\n      "),
-                               SExpr::List.new([SExpr::Symbol.new("position")] +
-                                               switch_pos.map{|i| SExpr::Integer.new(i)})]),
-              SExpr::Whitespace.new("\n    "),
-              SExpr::List.new([SExpr::Symbol.new("switchdoor-door"),
-                               SExpr::Whitespace.new("\n      "),
-                               SExpr::List.new([SExpr::Symbol.new("id"),
-                                                SExpr::String.new(id)]),
-                               SExpr::Whitespace.new("\n      "),
-                               SExpr::List.new([SExpr::Symbol.new("height"),
-                                                SExpr::Integer.new(door_height)]),
-                               SExpr::Whitespace.new("\n      "),
-                               SExpr::List.new([SExpr::Symbol.new("position")] +
-                                               door_pos.map{|i| SExpr::Integer.new(i)})])]
+      return [SExp::List.new([SExp::Symbol.new("switchdoor-switch"),
+                               SExp::Whitespace.new("\n      "),
+                               SExp::List.new([SExp::Symbol.new("target-id"),
+                                                SExp::String.new(id)]),
+                               SExp::Whitespace.new("\n      "),
+                               SExp::List.new([SExp::Symbol.new("position")] +
+                                               switch_pos.map{|i| SExp::Integer.new(i)})]),
+              SExp::Whitespace.new("\n    "),
+              SExp::List.new([SExp::Symbol.new("switchdoor-door"),
+                               SExp::Whitespace.new("\n      "),
+                               SExp::List.new([SExp::Symbol.new("id"),
+                                                SExp::String.new(id)]),
+                               SExp::Whitespace.new("\n      "),
+                               SExp::List.new([SExp::Symbol.new("height"),
+                                                SExp::Integer.new(door_height)]),
+                               SExp::Whitespace.new("\n      "),
+                               SExp::List.new([SExp::Symbol.new("position")] +
+                                               door_pos.map{|i| SExp::Integer.new(i)})])]
     else
-      lst = SExpr::List.new([])
+      lst = SExp::List.new([])
       sexpr.each{|i|
         el = rewrite_sexpr(i)
         if el
@@ -63,7 +63,7 @@ end
 ARGV.each { |filename|
   puts "Processing: #{filename}"
   begin
-    tree = SExpr::SExpr.parse(File.new(filename).read(), true, true)
+    tree = SExp::SExp.parse(File.new(filename).read(), true, true)
     fout = File.new(filename, "w")
     tree.each{|i|
       sexpr = rewrite_sexpr(i)

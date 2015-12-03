@@ -20,11 +20,11 @@
 require_relative "sexp-ruby/lexer.rb"
 require_relative "sexp-ruby/parser.rb"
 
-def SExpr.parse(str, comments=false, whitespace=false)
-  lexer = SExpr::Lexer.new(str)
+def SExp.parse(str, comments=false, whitespace=false)
+  lexer = SExp::Lexer.new(str)
   tokens = lexer.tokenize()
 
-  parser = SExpr::Parser.new(comments, whitespace)
+  parser = SExp::Parser.new(comments, whitespace)
   sx = parser.parse(tokens)
 
   return sx

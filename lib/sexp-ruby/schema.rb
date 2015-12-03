@@ -21,18 +21,18 @@ require_relative "value.rb"
 require_relative "reader.rb"
 require_relative "parser.rb"
 
-module SExpr
+module SExp
 
   class Schema
     def initialize(schema)
-      if schema.is_a?(SExpr) then
+      if schema.is_a?(SExp) then
         @schema = schema
       else
-        @schema = SExpr.parse(schema)
+        @schema = SExp.parse(schema)
         if @schema.length() == 1 then
           @schema = @schema[0]
         else
-          raise "Expected exactly one SExpr, got #{@schema.length}"
+          raise "Expected exactly one SExp, got #{@schema.length}"
         end
       end
 
@@ -406,7 +406,7 @@ module SExpr
       @children = reader.read_section("children").sections.map{|el| Element.new(el) }
     end
 
-    def validate(sexprlst) # sexpr == SExpr::List
+    def validate(sexprlst) # sexpr == SExp::List
       sexprlst.each{ |sexpr|
         el = @children.find{|i| i.name == sexpr[0].value }
         if not el then

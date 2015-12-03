@@ -20,7 +20,7 @@
 require_relative "value.rb"
 require_relative "lexer.rb"
 
-module SExpr
+module SExp
   class Position
     attr_reader :line, :column
 

@@ -58,7 +58,7 @@ else
   ARGV[1..-1].each{|i|
     begin
       text = File.new(i).read()
-      reader = SExpr::Reader.from_string(text)
+      reader = SExp::Reader.from_string(text)
 
       sexp_grep(i, reader, expression)
     rescue RuntimeError
