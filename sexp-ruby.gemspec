@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Ingo Ruhnke"]
   s.email       = 'grumbel@gmail.com'
   s.files       = Dir.glob("{bin,lib}/**/*.rb")
+  s.executables = ['sexp-grep.rb']
   s.homepage    = 'https://github.com/lispparser/sexp-ruby'
   s.license     = 'zlib'
 end
