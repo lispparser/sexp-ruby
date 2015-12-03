@@ -23,6 +23,10 @@ require_relative "../sexp-ruby.rb"
 
 module SExp
   class Reader
+    def Reader.from_file(filename)
+      return Reader.from_string(File.read(filename))
+    end
+
     def Reader.from_string(str)
       lst = SExp::parse(str)
       if lst.length() == 1 then

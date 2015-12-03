@@ -17,7 +17,7 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
-require_relative "../lib/sexp-ruby/reader.rb"
+require "sexp-ruby/reader"
 
 require "test/unit"
 
@@ -25,24 +25,16 @@ class TestReader < Test::Unit::TestCase
 
   def test_simple
     reader = SExp::Reader.from_string("(pingus-level (head) (bla 5))")
-    puts "XXXX", reader.find_many(["bla"]).inspect
     assert_equal("pingus-level", reader.name)
     assert_equal(5, reader.read_integer(["bla"]))
   end
 
-  def test_from_file()
-    filename = "test/level-syntax.scm"
-
-    reader = SExp::Reader.from_string(File.new(filename).read())
-    # puts reader.name
-    print "Version: "
-    puts reader.read_integer(["version"])
-    print "Title: "
-    puts reader.read_string(["head", "levelname"]).inspect
-    print "Description: "
-    puts reader.read_string(["head", "description"]).inspect
-
-    puts reader.find(["head", "actions"])
+  def test_from_file
+    reader = SExp::Reader.from_file("test/level.scm")
+    assert_equal("pingus-level", reader.name)
+    assert_equal(3, reader.read_integer(["version"]))
+    assert_equal("Miner's heaven", reader.read_string(["head", "levelname"]))
+    assert_equal(nil, reader.read_integer(["not-there"]))
   end
 
 end

@@ -17,9 +17,9 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
-require_relative "../lib/sexp-ruby/value.rb"
-require_relative "../lib/sexp-ruby/reader.rb"
-require_relative "../lib/sexp-ruby/schema.rb"
+require "sexp-ruby/value"
+require "sexp-ruby/reader"
+require "sexp-ruby/schema"
 
 require "test/unit"
 
